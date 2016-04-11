@@ -1,4 +1,4 @@
-﻿using Azure.DataObjects;
+﻿using Azure.ClientObjects;
 using Azure.Models;
 using System;
 using System.Collections.Generic;
@@ -9,15 +9,22 @@ using System.Web.Http;
 
 namespace Azure.Controllers
 {
-    public class BiometricController : ApiController
+    public class ProviderController : ApiController
     {
         private DataContext db = new DataContext();
 
         [HttpGet]
-        public List<Biometric> GetMeasurements(int patientId)
+        public List<ViewProvider> Get()
         {
-            return db.Biometrics.Where(x => x.PatientId == patientId).OrderByDescending(x => x.MeasurementDate).ToList();
+            return db.Providers.ToList();
         }
+
+        [HttpGet]
+        public List<ViewProvider> GetByRole(string role)
+        {
+            return db.Providers.Where(x=>x.Role == role).ToList();
+        }
+
 
         protected override void Dispose(bool disposing)
         {

@@ -14,8 +14,8 @@ namespace Azure.DataObjects
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PatientToDoId { get; set; }
         public int PatientId { get; set; }
-        public string note { get; set; }
-        public int procedureCodeId { get; set; }
+        public string Note { get; set; }
+        public int ProcedureCodeId { get; set; }
         public DateTime Created { get; set; }
         public bool Complete { get; set; }
         public DateTime CompleteDate { get; set; }

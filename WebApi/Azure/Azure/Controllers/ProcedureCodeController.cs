@@ -10,18 +10,17 @@ using System.Web.Http;
 
 namespace Azure.Controllers
 {
-    public class DiagnosisCodesController : ApiController
+    public class ProcedureCodeController : ApiController
     {
         [HttpGet]
-        public List<DiagnosisCode> Get()
+        public List<ProcedureCode> Get()
         {
             using (var db = new DataContext())
             {
-                return db.DiagnosisCodes.ToList();
+                return db.ProcedureCodes.ToList();
             }
         }
 
-        [HttpGet]
         public List<Patient> Get(int howMany)
         {
             EHR ehr = new EHR();

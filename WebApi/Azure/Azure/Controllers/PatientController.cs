@@ -1,4 +1,5 @@
-﻿using Azure.DataObjects;
+﻿using Azure.ClientObjects;
+using Azure.DataObjects;
 using Azure.EhrAssets;
 using Azure.Models;
 using System;
@@ -11,7 +12,7 @@ using System.Web.Http;
 
 namespace Azure.Controllers
 {
-    public class PatientsController : ApiController
+    public class PatientController : ApiController
     {
         private DataContext db = new DataContext();
 
@@ -20,6 +21,15 @@ namespace Azure.Controllers
         {
             EHR ehr = new EHR();
             ehr.CreateNewPatients(howMany);
+        }
+
+        [HttpPost]
+        public List<ViewPatient> GetPatient(int patientID)
+        {
+            return db.Patients
+                .Include("PatientToDos")
+                .Include("PatientProviders")
+                .Include("PatientProcedurse");
         }
 
         public List<Patient> GetAssignedPatients(int providerId)
