@@ -15,9 +15,12 @@ namespace Azure.Controllers
         private DataContext db = new DataContext();
 
         [HttpGet]
-        public List<ViewDocument> GetMeasurements(int patientId)
+        public List<PatientImaging> GetMeasurements(int patientId)
         {
-            return db.PatientImagings.Where(x => x.PatientId == patientId).OrderByDescending(x => x.UploadDate).ToList();
+            return db.PatientImagings
+                .Where(x => x.PatientId == patientId)
+                .OrderByDescending(x => x.UploadDate)
+                .ToList();
         }
 
         protected override void Dispose(bool disposing)

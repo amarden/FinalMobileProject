@@ -1,4 +1,6 @@
-﻿using Azure.ClientObjects;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Azure.ClientObjects;
 using Azure.DataObjects;
 using Azure.Models;
 using System;
@@ -14,18 +16,29 @@ namespace Azure.Controllers
     public class ToDoController : ApiController
     {
         private DataContext db = new DataContext();
+        private MapperConfiguration config = new MapperConfiguration(cfg =>
+            cfg.CreateMap<PatientToDo, ToDoItem>());
 
         [HttpGet]
         public List<ToDoItem> Get(int patientId)
         {
-            return db.PatientToDos.Where(x => x.PatientId == patientId).OrderByDescending(x => x.Created).ToList();
+            return db.PatientToDos
+                .Where(x => x.PatientId == patientId)
+                .OrderByDescending(x => x.Created)
+                .ProjectTo<ToDoItem>(config)
+                .ToList();
         }
 
         [HttpGet]
         public List<ToDoItem> Get()
         {
             int providerId = 0;
-            return db.ProviderPatients.Where(x => x.ProviderId == providerId).Select(x=>x.Patient).SelectMany(x=>x.PatientToDos);
+            return db.ProviderPatients
+                .Where(x => x.ProviderId == providerId)
+                .Select(x=>x.Patient)
+                .SelectMany(x=>x.PatientToDos)
+                .ProjectTo<ToDoItem>(config)
+                .ToList(); ;
         }
 
         [HttpPut]

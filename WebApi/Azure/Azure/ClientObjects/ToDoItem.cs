@@ -9,7 +9,7 @@ namespace Azure.ClientObjects
     {
         public int PatientToDoId { get; set; }
         public int PatientId { get; set; }
-        public string PatientName { get; set; S}
+        public string PatientName { get; set; }
         public string Note { get; set; }
         public int ProcedureCodeId { get; set; }
         public DateTime Created { get; set; }

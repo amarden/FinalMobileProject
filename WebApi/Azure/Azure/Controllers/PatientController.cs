@@ -1,4 +1,6 @@
-﻿using Azure.ClientObjects;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Azure.ClientObjects;
 using Azure.DataObjects;
 using Azure.EhrAssets;
 using Azure.Models;
@@ -23,13 +25,20 @@ namespace Azure.Controllers
             ehr.CreateNewPatients(howMany);
         }
 
-        [HttpPost]
-        public List<ViewPatient> GetPatient(int patientID)
+        [HttpGet]
+        public ViewPatient GetPatient(int patientID)
         {
+            var config = new MapperConfiguration(cfg =>
+             cfg.CreateMap<Patient, ViewPatient>()
+                .ForMember(dto => dto.Diagnosis, conf => conf.MapFrom(x=>x.DiagnosisCode.Diagnosis)));
+
             return db.Patients
                 .Include("PatientToDos")
                 .Include("PatientProviders")
-                .Include("PatientProcedurse");
+                .Include("PatientProcedures")
+                .Include("PatientChatLogs")
+                .Where(x=>x.PatientId == patientID)
+                .ProjectTo<ViewPatient>(config).Single();
         }
 
         public List<Patient> GetAssignedPatients(int providerId)

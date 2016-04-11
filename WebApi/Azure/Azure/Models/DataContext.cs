@@ -57,15 +57,15 @@ namespace Azure.Models
              .WithRequired(x => x.Patient)
              .HasForeignKey(x => x.PatientId);
 
+            modelBuilder.Entity<Provider>()
+             .HasMany(x => x.PatientToDos)
+             .WithOptional(x => x.Provider)
+             .HasForeignKey(x => x.ProviderId);
+
             modelBuilder.Entity<Patient>()
                .HasMany(x => x.PatientProviders)
                .WithRequired(x => x.Patient)
                .HasForeignKey(x => x.PatientId);
-
-            modelBuilder.Entity<Provider>()
-               .HasMany(x => x.PatientProviders)
-               .WithRequired(x => x.Provider)
-               .HasForeignKey(x => x.ProviderId);
 
             modelBuilder.Entity<DiagnosisCode>()
                 .HasMany(x => x.Patients)

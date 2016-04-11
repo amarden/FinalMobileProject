@@ -1,4 +1,7 @@
-﻿using Azure.ClientObjects;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Azure.ClientObjects;
+using Azure.DataObjects;
 using Azure.Models;
 using System;
 using System.Collections.Generic;
@@ -13,16 +16,21 @@ namespace Azure.Controllers
     {
         private DataContext db = new DataContext();
 
+        private MapperConfiguration config = new MapperConfiguration(cfg =>
+                cfg.CreateMap<Provider, ViewProvider>());
+
         [HttpGet]
         public List<ViewProvider> Get()
         {
-            return db.Providers.ToList();
+            return db.Providers.ProjectTo<ViewProvider>(config).ToList();
         }
 
         [HttpGet]
         public List<ViewProvider> GetByRole(string role)
         {
-            return db.Providers.Where(x=>x.Role == role).ToList();
+            return db.Providers
+                .Where(x=>x.Role == role)
+                .ProjectTo<ViewProvider>(config).ToList();
         }
 
 

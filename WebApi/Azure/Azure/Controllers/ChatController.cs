@@ -1,12 +1,11 @@
-﻿using Azure.ClientObjects;
+﻿using AutoMapper;
+using Azure.ClientObjects;
 using Azure.DataObjects;
 using Azure.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
+using AutoMapper.QueryableExtensions;
 
 namespace Azure.Controllers
 {
@@ -17,7 +16,15 @@ namespace Azure.Controllers
         [HttpGet]
         public List<ViewChatLog> Get(int patientId)
         {
-            return db.PatientChatLogs.Where(x => x.PatientId == patientId).OrderBy(x => x.Created).ToList();
+            var config = new MapperConfiguration(cfg =>
+             cfg.CreateMap<PatientChatLog, ViewChatLog>()
+             .ForMember(dto => dto.ProviderName, conf => conf.MapFrom(ol => ol.Provider.Name)));
+
+            return db.PatientChatLogs
+                .Where(x => x.PatientId == patientId)
+                .OrderBy(x => x.Created)
+                .ProjectTo<ViewChatLog>(config)
+                .ToList();
         }
 
         [HttpGet]
