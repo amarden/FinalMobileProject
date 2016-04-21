@@ -10,7 +10,7 @@ namespace Azure.DataObjects
         public Provider()
         {
             PatientProviders = new HashSet<PatientProvider>();
-            PatientToDos = new HashSet<PatientToDo>();
+            PatientProcedures = new HashSet<PatientProcedure>();
         }
 
         [Key]
@@ -20,7 +20,7 @@ namespace Azure.DataObjects
         public string TwitterUserId { get; set; }
         public string Role { get; set; }
         public virtual ICollection<PatientProvider> PatientProviders { get; set; }
-        public virtual ICollection<PatientToDo> PatientToDos { get; set; }
+        public virtual ICollection<PatientProcedure> PatientProcedures { get; set; }
 
     }
 }

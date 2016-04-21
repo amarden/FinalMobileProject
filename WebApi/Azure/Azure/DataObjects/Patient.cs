@@ -14,7 +14,6 @@ namespace Azure.DataObjects
             PatientChatLogs = new HashSet<PatientChatLog>();
             PatientImagings = new HashSet<PatientImaging>();
             PatientProviders = new HashSet<PatientProvider>();
-            PatientToDos = new HashSet<PatientToDo>();
         }
 
         [Key]
@@ -26,14 +25,13 @@ namespace Azure.DataObjects
         public string Gender { get; set; }
         public string MedicalStatus { get; set; }
         public DateTime AdmitDate { get; set; }
-        public DateTime AssignDate{ get; set; }
+        public DateTime? AssignDate{ get; set; }
         public DateTime? DischargeDate { get; set; }
         public virtual ICollection<Biometric> Biometrics { get; set; }
         public virtual ICollection<PatientProcedure> PatientProcedures { get; set; }
         public virtual ICollection<PatientChatLog> PatientChatLogs { get; set; }
         public virtual ICollection<PatientImaging> PatientImagings { get; set; }
         public virtual ICollection<PatientProvider> PatientProviders { get; set; }
-        public virtual ICollection<PatientToDo> PatientToDos { get; set; }
         public virtual DiagnosisCode DiagnosisCode { get; set; }
 
     }

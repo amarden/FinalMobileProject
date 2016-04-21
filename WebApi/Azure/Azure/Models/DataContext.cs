@@ -23,11 +23,10 @@ namespace Azure.Models
         public DbSet<DiagnosisCode> DiagnosisCodes { get; set; }
         public DbSet<ProcedureCode> ProcedureCodes { get; set; }
         public DbSet<PatientChatLog> PatientChatLogs { get; set; }
-        public DbSet<PatientToDo> PatientToDos { get; set; }
         public DbSet<PatientImaging> PatientImagings { get; set; }
         public DbSet<Biometric>  Biometrics { get; set; }
         public DbSet<PatientProcedure> PatientProcedures { get; set; }
-        public DbSet<PatientProvider> ProviderPatients { get; set; }
+        public DbSet<PatientProvider> PatientProviders{ get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -52,13 +51,8 @@ namespace Azure.Models
              .WithRequired(x => x.Patient)
              .HasForeignKey(x => x.PatientId);
 
-            modelBuilder.Entity<Patient>()
-             .HasMany(x => x.PatientToDos)
-             .WithRequired(x => x.Patient)
-             .HasForeignKey(x => x.PatientId);
-
             modelBuilder.Entity<Provider>()
-             .HasMany(x => x.PatientToDos)
+             .HasMany(x => x.PatientProcedures)
              .WithOptional(x => x.Provider)
              .HasForeignKey(x => x.ProviderId);
 

@@ -13,6 +13,7 @@ namespace Azure.EhrAssets
     public class EHR
     {
         private List<DiagnosisCode> dxCodes = new List<DiagnosisCode>();
+        private List<Provider> administrators = new List<Provider>();
         //Stable ranges and critical ranges to help calculate medical status
         private Tuple<int, int> systolicStableRange = new Tuple<int, int>(80, 145);
         private Tuple<int, int> diastolicStableRange = new Tuple<int, int>(50, 90);
@@ -29,6 +30,7 @@ namespace Azure.EhrAssets
             using (var db = new DataContext())
             {
                 this.dxCodes = db.DiagnosisCodes.ToList();
+                this.administrators = db.Providers.Where(x => x.Role == "Administrator").ToList();
             }
         }
 
@@ -42,8 +44,14 @@ namespace Azure.EhrAssets
                 p.Name = generateName(p.Gender);
                 p.Age = generateAge();
                 p.AdmitDate = DateTime.Now;
-                p.MedicalStatus = generateMedicalStatus();
                 p.DiagnosisCodeId = generateDiagnosis(p.Age);
+                var firstMetrics = initialValues();
+                PatientProvider assignedAdministrator = assignToRandomAdministrator();
+                var statusAndScore = imputeStatus(p.Biometrics, firstMetrics);
+                firstMetrics.DeathModifier = statusAndScore.Item2;
+                p.MedicalStatus = statusAndScore.Item1;
+                p.Biometrics.Add(firstMetrics);
+                p.PatientProviders.Add(assignedAdministrator);
                 patientsToAdd.Add(p);
             }
             using (var db = new DataContext())
@@ -51,6 +59,29 @@ namespace Azure.EhrAssets
                 db.Patients.AddRange(patientsToAdd);
                 db.SaveChanges();
             }
+        }
+
+        private PatientProvider assignToRandomAdministrator()
+        {
+            var pp = new PatientProvider();
+            var administratorCount = this.administrators.Count;
+            var assignTo = r.Next(0, administratorCount);
+            var admin = this.administrators[assignTo];
+            pp.ProviderId = admin.ProviderId;
+            pp.AssignedDate = DateTime.Now;
+            pp.Active = true;
+            return pp;
+        }
+
+        public Biometric initialValues()
+        {
+            Biometric b = new Biometric();
+            b.Systolic = r.Next(80, 160);
+            b.Diastolic = r.Next(50, 90);
+            b.Oxygen = r.Next(75, 100);
+            b.Glucose = r.Next(20, 160);
+            b.MeasurementDate = DateTime.Now;
+            return b;
         }
 
         public void PatientBiometricScan()
@@ -82,7 +113,7 @@ namespace Azure.EhrAssets
         private Tuple<string, int> imputeStatus(IEnumerable<Biometric> allMeasures, Biometric measure)
         {
             int lengthOfStay = allMeasures.Count();
-            int averageDeathModifier = (int)Math.Round(allMeasures.Average(x => x.DeathModifier)/10);
+            int averageDeathModifier = lengthOfStay == 0 ? 0 : (int)Math.Round(allMeasures.Average(x => x.DeathModifier)/10);
             int minRandomModifider = -15 + averageDeathModifier;
             int pastDeathModifier = r.Next(minRandomModifider, 10);
             //status for each measurement can be stable, unstable, or critical
@@ -99,11 +130,11 @@ namespace Azure.EhrAssets
             int chanceOfDeath = lengthOfStay == 0 ? 0 : deathModifier; //Cannot be dead on first measurement
             int randomInt = r.Next(0, 100);
             string patientStatus;
-            if (randomInt < chanceOfDeath)
+            if (randomInt < chanceOfDeath && chanceOfDeath > 0)
             {
                 patientStatus = "death";
             }
-            else if(chanceOfDeath - randomInt < 10)
+            else if(randomInt - chanceOfDeath < 10)
             {
                 patientStatus = "critical";
             }
@@ -230,16 +261,11 @@ namespace Azure.EhrAssets
             return r.Next(0, 100);
         }
 
-        private string generateMedicalStatus()
-        {
-            int rInt = r.Next(0, 100);
-            return rInt > 75 ? "critical" : "stable";
-        }
-
         private string generateGender()
         {
-            int rInt = r.Next(0, 1);
-            return rInt == 0 ? "male" : "female";
+            int rInt = r.Next(1, 3);
+            string gender = rInt == 1 ? "male" : "female";
+            return gender;
         }
 
         private string generateName(string gender)

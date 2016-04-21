@@ -138,6 +138,7 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="index.html" />
+    <Content Include="StartingData\ProviderStartList.txt" />
     <Content Include="StartingData\ProcedureCodes.txt" />
     <Content Include="Web.config" />
     <Content Include="packages.config" />
@@ -150,18 +151,24 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="ClientObjects\ToDoItem.cs" />
+    <Compile Include="ClientObjects\User.cs" />
     <Compile Include="ClientObjects\ViewChatLog.cs" />
     <Compile Include="ClientObjects\ViewImage.cs" />
+    <Compile Include="ClientObjects\ViewPatient.cs" />
+    <Compile Include="ClientObjects\ViewPatientProcedure.cs" />
+    <Compile Include="ClientObjects\ViewPatientProvider.cs" />
     <Compile Include="ClientObjects\ViewProvider.cs" />
+    <Compile Include="Controllers\AssignmentController.cs" />
     <Compile Include="Controllers\BiometricController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\DocumentController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ProcedureCodeController.cs" />
-    <Compile Include="Controllers\DiagnosisCodeController.cs" />
+    <Compile Include="Controllers\CodesController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
-    <Compile Include="ClientObjects\ViewPatient.cs" />
+    <Compile Include="ClientObjects\ViewPatientDetail.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
-    <Compile Include="Controllers\ToDoController.cs" />
+    <Compile Include="Controllers\TestWebJobController.cs" />
     <Compile Include="DataObjects\PatientChatLog.cs" />
     <Compile Include="DataObjects\PatientProcedure.cs" />
     <Compile Include="DataObjects\Biometric.cs" />
@@ -171,13 +178,13 @@
     <Compile Include="DataObjects\DiagnosisCode.cs" />
     <Compile Include="DataObjects\Patient.cs" />
     <Compile Include="DataObjects\Provider.cs" />
-    <Compile Include="DataObjects\PatientToDo.cs" />
     <Compile Include="EhrAssets\EHR.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\DataContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Temporary\FakeUser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\PublishProfiles\FinalProjectApi.pubxml" />

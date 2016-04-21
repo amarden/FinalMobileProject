@@ -27,7 +27,7 @@ namespace Azure.Controllers
                 .ToList();
         }
 
-        [HttpGet]
+        [HttpPost]
         public void Post(PatientChatLog message)
         {
             db.PatientChatLogs.Add(message);

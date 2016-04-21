@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Azure.DataObjects
+namespace Client.ClientObjects
 {
     public class PatientToDo
     {
@@ -20,8 +21,5 @@ namespace Azure.DataObjects
         public DateTime Created { get; set; }
         public bool Complete { get; set; }
         public DateTime CompleteDate { get; set; }
-        public virtual Patient Patient { get; set; }
-        public virtual Provider Provider { get; set; }
-
     }
 }

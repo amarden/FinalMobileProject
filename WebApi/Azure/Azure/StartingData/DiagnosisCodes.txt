@@ -98,3 +98,4 @@ Pulmonary heart disease
 Peri-, endo-, and myocarditis, cardiomyopathy (except that caused by tuberculosis or sexually transmitted disease)
 Aortic, peripheral, and visceral artery aneurysms
 Other injuries and conditions due to external causes 
+Undiagnosed

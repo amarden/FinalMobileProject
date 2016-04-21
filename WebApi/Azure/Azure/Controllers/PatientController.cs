@@ -4,6 +4,7 @@ using Azure.ClientObjects;
 using Azure.DataObjects;
 using Azure.EhrAssets;
 using Azure.Models;
+using Azure.Temporary;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -18,19 +19,33 @@ namespace Azure.Controllers
     {
         private DataContext db = new DataContext();
 
+        public class CustomResolver : ValueResolver<Patient, string>
+        {
+            protected override string ResolveCore(Patient patient)
+            {
+                return patient.AdmitDate.ToShortDateString();
+            }
+        }
+
         [HttpPost]
-        public void CreatePatients(int howMany)
+        public void CreatePatients()
         {
             EHR ehr = new EHR();
-            ehr.CreateNewPatients(howMany);
+            ehr.CreateNewPatients(100);
         }
 
         [HttpGet]
-        public ViewPatient GetPatient(int patientID)
+        public ViewPatientDetail GetPatient(int patientID)
         {
-            var config = new MapperConfiguration(cfg =>
-             cfg.CreateMap<Patient, ViewPatient>()
-                .ForMember(dto => dto.Diagnosis, conf => conf.MapFrom(x=>x.DiagnosisCode.Diagnosis)));
+             var config = new MapperConfiguration(cfg =>
+             {
+                 cfg.CreateMap<Patient, ViewPatientDetail>()
+                    .ForMember(dto => dto.Diagnosis, conf => conf.MapFrom(x => x.DiagnosisCode.Diagnosis))
+                    .ForMember(dto => dto.ProviderNumber, conf => conf.MapFrom(x => x.PatientProviders.Where(c => c.Active == true).Count()))
+                    .ForMember(dto => dto.ChatActivityNumber, conf => conf.MapFrom(x => x.PatientChatLogs.Count()))
+                    .ForMember(dto => dto.ImageNumber, conf => conf.MapFrom(x => x.PatientImagings.Count()))
+                    .ForMember(dto => dto.ProcedureNumber, conf => conf.MapFrom(x => x.PatientProcedures.Where(c=>c.Completed == false).Count()));
+             });
 
             return db.Patients
                 .Include("PatientToDos")
@@ -38,25 +53,24 @@ namespace Azure.Controllers
                 .Include("PatientProcedures")
                 .Include("PatientChatLogs")
                 .Where(x=>x.PatientId == patientID)
-                .ProjectTo<ViewPatient>(config).Single();
+                .ProjectTo<ViewPatientDetail>(config).Single();
         }
 
-        public List<Patient> GetAssignedPatients(int providerId)
+        [HttpGet]
+        public List<ViewPatient> GetAssignedPatients()
         {
-            return db.ProviderPatients
-                .Where(x => x.ProviderId == providerId && x.Patient.MedicalStatus != "discharged" && x.Patient.MedicalStatus != "dead")
-                .Select(x => x.Patient).ToList();
-        }
+            var config = new MapperConfiguration(cfg =>
+             cfg.CreateMap<Patient, ViewPatient>()
+               .ForMember(dto => dto.Diagnosis, conf => conf.MapFrom(x => x.DiagnosisCode.Diagnosis))
+               .ForMember(dto => dto.NumProvidersAssigned, conf => conf.MapFrom(x=>x.PatientProviders.Where(c=>c.Provider.Role != "Administrator").Count()))
+               );
 
-        [HttpPut]
-        public void AssignPatient(Patient p, int providerId)
-        {
-            PatientProvider pp = new PatientProvider();
-            pp.PatientId = p.PatientId;
-            pp.ProviderId = providerId;
-            p.AssignDate = new DateTime();
-            db.Entry(p).State = EntityState.Modified;
-            db.SaveChanges();
+            var providerId = FakeUser.getUser().Id; 
+            return db.PatientProviders
+                .Where(x => x.ProviderId == providerId && x.Patient.MedicalStatus != "discharged" && x.Patient.MedicalStatus != "dead" && x.Active == true)
+                .Select(x => x.Patient)
+                .ProjectTo<ViewPatient>(config)
+                .ToList();
         }
 
         [HttpPut]

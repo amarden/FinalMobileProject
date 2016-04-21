@@ -10,18 +10,26 @@ using System.Web.Http;
 
 namespace Azure.Controllers
 {
-    public class DiagnosisCodeController : ApiController
+    public class CodesController : ApiController
     {
+        private DataContext db = new DataContext();
+
+        //[HttpGet]
+        //public List<DiagnosisCode> Get()
+        //{
+        //    using (var db = new DataContext())
+        //    {
+        //        return db.DiagnosisCodes.ToList();
+        //    }
+        //}
+
         [HttpGet]
-        public List<DiagnosisCode> Get()
+        public List<ProcedureCode> Get()
         {
-            using (var db = new DataContext())
-            {
-                return db.DiagnosisCodes.ToList();
-            }
+            return db.ProcedureCodes.ToList();
         }
 
-        public List<Patient> Get(int howMany)
+        public List<Patient> EHRStandIn(int howMany)
         {
             EHR ehr = new EHR();
             ehr.CreateNewPatients(howMany);
@@ -39,6 +47,15 @@ namespace Azure.Controllers
                     .ToList();
                 return patients;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

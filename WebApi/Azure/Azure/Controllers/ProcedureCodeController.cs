@@ -1,8 +1,13 @@
-﻿using Azure.DataObjects;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Azure.ClientObjects;
+using Azure.DataObjects;
 using Azure.EhrAssets;
 using Azure.Models;
+using Azure.Temporary;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,33 +17,57 @@ namespace Azure.Controllers
 {
     public class ProcedureCodeController : ApiController
     {
+        private DataContext db = new DataContext();
+
         [HttpGet]
         public List<ProcedureCode> Get()
         {
-            using (var db = new DataContext())
-            {
-                return db.ProcedureCodes.ToList();
-            }
+            return db.ProcedureCodes.ToList();
         }
 
-        public List<Patient> Get(int howMany)
+        [HttpGet]
+        public List<ViewPatientProcedure> GetByPatient(int patientId)
         {
-            EHR ehr = new EHR();
-            ehr.CreateNewPatients(howMany);
-            using (var db = new DataContext())
+            var config = new MapperConfiguration(cfg =>
+             cfg.CreateMap<PatientProcedure, ViewPatientProcedure>()
+               .ForMember(dto => dto.Procedure, conf => conf.MapFrom(x => x.ProcedureCode.Procedure))
+               .ForMember(dto => dto.CompletedTime, conf => conf.MapFrom(x=>x.CompletedTime))
+               .ForMember(dto => dto.CompletedBy, conf => conf.MapFrom(x=>x.Provider.Name))
+               .ForMember(dto => dto.procedureRole, conf => conf.MapFrom(x => x.ProcedureCode.Role))
+            );
+
+            var data = db.PatientProcedures.Where(x => x.PatientId == patientId).ProjectTo<ViewPatientProcedure>(config).ToList();
+            data.ForEach(x => x.ShowRules.procedureRole = x.procedureRole);
+            data.ForEach(x => x.ShowRules.Completed = x.Completed);
+            return data;
+        }
+
+        [HttpPost]
+        public void Create(PatientProcedure procedure)
+        {
+            db.PatientProcedures.Add(procedure);
+            db.SaveChanges();
+        }
+
+        [HttpPut]
+        public void Complete(int patientProcedureId)
+        {
+            var providerId = FakeUser.getUser().Id;
+            var patientProcedure = db.PatientProcedures.Where(x => x.PatientProcedureId == patientProcedureId).Single();
+            patientProcedure.Completed = true;
+            patientProcedure.ProviderId = providerId;
+            patientProcedure.CompletedTime = DateTime.Now;
+            db.Entry(patientProcedure).State = EntityState.Modified;
+            db.SaveChanges();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                var patients = db.Patients
-                    .Include("DiagnosisCode")
-                    .Include("Biometrics")
-                    .Include("PatientChatLogs")
-                    .Include("PatientToDos")
-                    .Include("PatientProviders")
-                    .Include("PatientProcedures")
-                    .Include("PatientImagings")
-                    .Include("Biometrics")
-                    .ToList();
-                return patients;
+                db.Dispose();
             }
+            base.Dispose(disposing);
         }
     }
 }

@@ -17,16 +17,36 @@ namespace Azure.App_Start
         {
             List<DiagnosisCode> diagnoses = getDiagnoses();
             List<ProcedureCode> procedures = getProcedures();
+            List<Provider> providers = getProviders();
             using (var db = new DataContext())
             {
                 db.DiagnosisCodes.AddRange(diagnoses);
                 db.ProcedureCodes.AddRange(procedures);
+                db.Providers.AddRange(providers);
                 db.SaveChanges();
             }
 
             base.Seed(context);
         }
 
+        public List<Provider> getProviders()
+        {
+            var providers = new List<Provider>();
+            string path = HttpContext.Current.Server.MapPath("~/StartingData/ProviderStartList.txt");
+            using (StreamReader sr = new StreamReader(path))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] data = line.Split(',');
+                    var provider = new Provider();
+                    provider.Name = data[0];
+                    provider.Role = data[1];
+                    providers.Add(provider);
+                }
+            }
+            return providers;
+        }
 
         public List<DiagnosisCode> getDiagnoses()
         {
