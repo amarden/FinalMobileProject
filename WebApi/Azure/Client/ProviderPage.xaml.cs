@@ -1,5 +1,4 @@
-﻿using Azure.ClientObjects;
-using Client.ClientObjects;
+﻿using Client.ClientObjects;
 using Microsoft.WindowsAzure.MobileServices;
 using Newtonsoft.Json.Linq;
 using System;

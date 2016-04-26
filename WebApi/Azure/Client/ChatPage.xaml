@@ -6,7 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
+    <Page.Resources>
+        <local:CustomIsNurseConverter x:Key="CustomIsNurseConverter" />
+        <local:CustomIsNotNurseConverter x:Key="CustomIsNotNurseConverter" />
+    </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
@@ -47,14 +50,17 @@
             <TextBox x:Name="messageTextBox" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></TextBox>
             <Button Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="addMessage">Submit</Button>
         </Grid>
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="3" DataContext="{Binding User}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="navToPatient">Back to Patient Page</Button>
+            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="navToNursePage"
+                    Visibility="{Binding Role, Converter={StaticResource CustomIsNurseConverter}}" >Back to Support Procedures</Button>
+            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="navToPatient"
+                    Visibility="{Binding Role, Converter={StaticResource CustomIsNotNurseConverter}}">Back to Patient Page</Button>
         </Grid>
     </Grid>
 </Page>

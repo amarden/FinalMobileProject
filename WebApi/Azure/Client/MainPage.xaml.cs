@@ -1,5 +1,6 @@
 ﻿using Client.ClientObjects;
 using Microsoft.WindowsAzure.MobileServices;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,7 +27,12 @@ namespace Client
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient("http://localhost:6163");
+        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient("https://mardenfinalproject.azurewebsites.net/");
+
+        public class ProviderType
+        {
+            public string role { get; set; }
+        }
 
         public MainPage()
         {
@@ -40,7 +46,18 @@ namespace Client
                 var resultJson = await MobileServiceDotNet.InvokeApiAsync<User>("login", HttpMethod.Get, null);
                 if (resultJson != null)
                 {
-                    this.Frame.Navigate(typeof(HomePage), resultJson);
+                    if (resultJson.Role == "Nurse")
+                    {
+                        this.Frame.Navigate(typeof(NursePage), resultJson);
+                    }
+                    else if(resultJson.Role == "SuperUser")
+                    {
+                        this.Frame.Navigate(typeof(SuperUserPage));
+                    }
+                    else
+                    {
+                        this.Frame.Navigate(typeof(HomePage), resultJson);
+                    }
                 }
             }
             catch (MobileServiceInvalidOperationException)
@@ -57,9 +74,26 @@ namespace Client
                 dialog.Commands.Add(new UICommand("OK"));
                 await dialog.ShowAsync();
             }
-            finally
+        }
+
+        private async void register(object sender, TappedRoutedEventArgs e)
+        {
+            var btn = (Button)sender;
+            var role = btn.Content;
+            ProviderType pt = new ProviderType();
+            pt.role = role.ToString();
+            try
             {
-                //MyProgressBar.IsIndeterminate = false;
+                await MobileServiceDotNet.LoginAsync(MobileServiceAuthenticationProvider.Twitter);
+                var data = JToken.FromObject(pt);
+                await MobileServiceDotNet.InvokeApiAsync("registration", data);
+            }
+            catch
+            {
+                var message = "There was a problem during registration";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
             }
         }
     }

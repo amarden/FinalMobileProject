@@ -94,5 +94,10 @@ namespace Client
         {
             this.Frame.Navigate(typeof(PatientPage), this.screenData);
         }
+
+        private void navToNursePage(object sender, TappedRoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(NursePage), this.screenData.User);
+        }
     }
 }

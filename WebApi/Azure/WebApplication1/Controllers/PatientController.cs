@@ -19,19 +19,16 @@ namespace Azure.Controllers
     {
         private DataContext db = new DataContext();
 
-        public class CustomResolver : ValueResolver<Patient, string>
+        public class PatientCreate
         {
-            protected override string ResolveCore(Patient patient)
-            {
-                return patient.AdmitDate.ToShortDateString();
-            }
+            public int number { get; set; }
         }
 
         [HttpPost]
-        public void CreatePatients()
+        public void CreatePatients(PatientCreate toCreate)
         {
             EHR ehr = new EHR();
-            ehr.CreateNewPatients(100);
+            ehr.CreateNewPatients(toCreate.number);
         }
 
         [HttpGet]
@@ -78,6 +75,7 @@ namespace Azure.Controllers
         {
             var patient = db.Patients.Where(x => x.PatientId == patientId).Single();
             patient.MedicalStatus = "discharged";
+            patient.DischargeDate = DateTime.Now;
             db.Entry(patient).State = EntityState.Modified;
             db.SaveChanges();
         }

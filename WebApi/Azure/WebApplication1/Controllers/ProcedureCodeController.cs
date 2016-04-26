@@ -42,6 +42,21 @@ namespace Azure.Controllers
             return data;
         }
 
+        [HttpGet]
+        public List<ViewSupportProcedure> GetProcedureByRole(string role)
+        {
+            var config = new MapperConfiguration(cfg =>
+             cfg.CreateMap<PatientProcedure, ViewSupportProcedure>()
+               .ForMember(dto => dto.ProcedureName, conf => conf.MapFrom(x => x.ProcedureCode.Procedure))
+               .ForMember(dto => dto.PatientName, conf => conf.MapFrom(x => x.Patient.Name))
+               .ForMember(dto => dto.PatientId, conf => conf.MapFrom(x => x.Patient.PatientId))
+            );
+
+            var data = db.PatientProcedures.Where(x => x.ProcedureCode.Role == role && x.Completed == false)
+                .ProjectTo<ViewSupportProcedure>(config).ToList();
+            return data;
+        }
+
         [HttpPost]
         public void Create(PatientProcedure procedure)
         {
