@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
+using Azure.EhrAssets;
 
 namespace EhrWebJob
 {
@@ -16,7 +17,16 @@ namespace EhrWebJob
         {
             var host = new JobHost();
             // The following code ensures that the WebJob will be running continuously
-            host.RunAndBlock();
+            //host.RunAndBlock();
+
+            host.Call(typeof(Program).GetMethod("ScanPatients"));
+        }
+
+        [NoAutomaticTrigger]
+        public static void ScanPatients()
+        {
+            EHR ehr = new EHR();
+            ehr.PatientBiometricScan();
         }
     }
 }

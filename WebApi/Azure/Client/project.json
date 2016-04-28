@@ -5,7 +5,8 @@
     "Microsoft.ApplicationInsights.WindowsApps": "1.0.0",
     "Microsoft.Azure.Mobile.Client": "2.0.1",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
-    "VisibilityControl": "1.0.1"
+    "VisibilityControl": "1.0.1",
+    "WindowsAzure.Storage": "7.0.0"
   },
   "frameworks": {
     "uap10.0": {}

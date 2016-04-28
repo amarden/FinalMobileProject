@@ -28,7 +28,7 @@ namespace Client
     public sealed partial class ChatPage : Page
     {
         private PatientScreenData screenData = new PatientScreenData();
-        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient("http://localhost:6163");
+        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
 
         public ChatPage()
         {

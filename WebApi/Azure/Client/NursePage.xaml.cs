@@ -26,7 +26,7 @@ namespace Client
     /// </summary>
     public sealed partial class NursePage : Page
     {
-        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient("http://localhost:6163");
+        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
         private User user = new User();
 
         public NursePage()

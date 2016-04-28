@@ -1,9 +1,9 @@
 ﻿{
   "$schema": "http://schemastore.org/schemas/json/webjob-publish-settings.json",
   "webJobName": "EhrWebJob",
-  "startTime": "2016-04-25T00:00:00-05:00",
-  "endTime": "2016-04-26T00:00:00-05:00",
-  "jobRecurrenceFrequency": "Minute",
-  "interval": 5,
-  "runMode": "Scheduled"
+  "startTime": null,
+  "endTime": null,
+  "jobRecurrenceFrequency": null,
+  "interval": null,
+  "runMode": "Continuous"
 }

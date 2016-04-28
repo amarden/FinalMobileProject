@@ -84,32 +84,6 @@ namespace Azure.EhrAssets
             return b;
         }
 
-        public void PatientBiometricScan()
-        {
-            using (var db = new DataContext())
-            {
-                var patients = db.Patients.Include("Biometrics").Where(x=>x.MedicalStatus == "stable" || x.MedicalStatus == "critical");
-                foreach(var p in patients)
-                {
-                    bool shouldMeasure = r.Next(0, 100) < 25 ? true : false;
-                    if(shouldMeasure)
-                    {
-                        bool hasFourMeasureMents = doesPatientHaveFourMeasureMentsToday(p);
-                        if(!hasFourMeasureMents)
-                        {
-                            Biometric measure = generateBiometric(p);
-                            var status = imputeStatus(p.Biometrics, measure);
-                            measure.DeathModifier = status.Item2;
-                            p.MedicalStatus = status.Item1;
-                            db.Entry(p).State = EntityState.Modified;
-                            db.Biometrics.Add(measure);
-                        }
-                    } 
-                }
-                db.SaveChanges();
-            }
-        }
-
         private Tuple<string, int> imputeStatus(IEnumerable<Biometric> allMeasures, Biometric measure)
         {
             int lengthOfStay = allMeasures.Count();
@@ -242,13 +216,6 @@ namespace Azure.EhrAssets
             int newOxygen = (int)Math.Round(lastReading.Oxygen * percentChange + lastReading.Oxygen);
             newOxygen = Math.Min(newOxygen, 100);
             return newOxygen;
-        }
-
-        private bool doesPatientHaveFourMeasureMentsToday(Patient patient)
-        {
-            DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            var measurementsToday = patient.Biometrics.Where(x => today > x.MeasurementDate).Count();
-            return measurementsToday == 4;
         }
 
         private int generateDiagnosis(int age)

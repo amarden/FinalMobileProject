@@ -12,8 +12,6 @@ namespace Azure.EhrAssets
 {
     public class EHR
     {
-        private List<DiagnosisCode> dxCodes = new List<DiagnosisCode>();
-        private List<Provider> administrators = new List<Provider>();
         //Stable ranges and critical ranges to help calculate medical status
         private Tuple<int, int> systolicStableRange = new Tuple<int, int>(80, 145);
         private Tuple<int, int> diastolicStableRange = new Tuple<int, int>(50, 90);
@@ -27,61 +25,6 @@ namespace Azure.EhrAssets
 
         public EHR()
         {
-            using (var db = new DataContext())
-            {
-                this.dxCodes = db.DiagnosisCodes.ToList();
-                this.administrators = db.Providers.Where(x => x.Role == "Administrator").ToList();
-            }
-        }
-
-        public void CreateNewPatients(int number)
-        {
-            List<Patient> patientsToAdd = new List<Patient>();
-            for(int i=0; i< number; i++)
-            {
-                var p = new Patient();
-                p.Gender = generateGender();
-                p.Name = generateName(p.Gender);
-                p.Age = generateAge();
-                p.AdmitDate = DateTime.Now;
-                p.DiagnosisCodeId = generateDiagnosis(p.Age);
-                var firstMetrics = initialValues();
-                PatientProvider assignedAdministrator = assignToRandomAdministrator();
-                var statusAndScore = imputeStatus(p.Biometrics, firstMetrics);
-                firstMetrics.DeathModifier = statusAndScore.Item2;
-                p.MedicalStatus = statusAndScore.Item1;
-                p.Biometrics.Add(firstMetrics);
-                p.PatientProviders.Add(assignedAdministrator);
-                patientsToAdd.Add(p);
-            }
-            using (var db = new DataContext())
-            {
-                db.Patients.AddRange(patientsToAdd);
-                db.SaveChanges();
-            }
-        }
-
-        private PatientProvider assignToRandomAdministrator()
-        {
-            var pp = new PatientProvider();
-            var administratorCount = this.administrators.Count;
-            var assignTo = r.Next(0, administratorCount);
-            var admin = this.administrators[assignTo];
-            pp.ProviderId = admin.ProviderId;
-            pp.AssignedDate = DateTime.Now;
-            pp.Active = true;
-            return pp;
-        }
-
-        public Biometric initialValues()
-        {
-            Biometric b = new Biometric();
-            b.Systolic = r.Next(80, 160);
-            b.Diastolic = r.Next(50, 90);
-            b.Oxygen = r.Next(75, 100);
-            b.Glucose = r.Next(20, 160);
-            b.MeasurementDate = DateTime.Now;
-            return b;
         }
 
         public void PatientBiometricScan()
@@ -94,8 +37,8 @@ namespace Azure.EhrAssets
                     bool shouldMeasure = r.Next(0, 100) < 25 ? true : false;
                     if(shouldMeasure)
                     {
-                        bool hasFourMeasureMents = doesPatientHaveFourMeasureMentsToday(p);
-                        if(!hasFourMeasureMents)
+                        bool hasMaxMeasurements = doesPatientHaveMaxMeasurementsToday(p, 10);
+                        if(!hasMaxMeasurements)
                         {
                             Biometric measure = generateBiometric(p);
                             var status = imputeStatus(p.Biometrics, measure);
@@ -163,7 +106,6 @@ namespace Azure.EhrAssets
             }
             return status;
         }
-
 
         private string checkGlucoseStatus(int glucose)
         {
@@ -244,42 +186,11 @@ namespace Azure.EhrAssets
             return newOxygen;
         }
 
-        private bool doesPatientHaveFourMeasureMentsToday(Patient patient)
+        private bool doesPatientHaveMaxMeasurementsToday(Patient patient, int max)
         {
             DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
             var measurementsToday = patient.Biometrics.Where(x => today > x.MeasurementDate).Count();
-            return measurementsToday == 4;
-        }
-
-        private int generateDiagnosis(int age)
-        {
-            return r.Next(1, 20);
-        }
-
-        private int generateAge()
-        {
-            return r.Next(0, 100);
-        }
-
-        private string generateGender()
-        {
-            int rInt = r.Next(1, 3);
-            string gender = rInt == 1 ? "male" : "female";
-            return gender;
-        }
-
-        private string generateName(string gender)
-        {
-            string name="";
-            if(gender == "male")
-            {
-                name = NameFaker.MaleFirstName() + " " + NameFaker.LastName();
-            }
-            else if(gender == "female")
-            {
-                name = NameFaker.FemaleFirstName() + " " + NameFaker.LastName();
-            }
-            return name;
+            return measurementsToday == max;
         }
     }
 }

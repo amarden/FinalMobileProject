@@ -18,7 +18,7 @@ namespace Client
     /// </summary>
     public sealed partial class HomePage : Page
     {
-        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient("http://localhost:6163");
+        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
         private User user = new User();
 
         public HomePage()

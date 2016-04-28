@@ -13,13 +13,6 @@ namespace Azure.Controllers
     public class TestWebJobController : ApiController
     {
         [HttpGet]
-        public void Run()
-        {
-            EHR ehr = new EHR();
-            ehr.PatientBiometricScan();
-        }
-
-        [HttpGet]
         public List<Patient> Get(int howMany)
         {
             EHR ehr = new EHR();

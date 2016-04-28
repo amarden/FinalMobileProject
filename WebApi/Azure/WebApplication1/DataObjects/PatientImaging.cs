@@ -12,7 +12,7 @@ namespace Azure.DataObjects
         public int PatientImagingId{ get; set; }
         public int PatientId { get; set; }
         public string ImageType { get; set; }
-        public string ImagePath { get; set; }
+        public string ImageBlobId { get; set; }
         public DateTime UploadDate { get; set; }
         [JsonIgnore]
         public virtual Patient Patient { get; set; }

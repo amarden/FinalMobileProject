@@ -21,7 +21,7 @@ namespace Azure.Temporary
                     Name = x.Name,
                     Role = x.Role
                 }).ToList();
-                return prov[5];
+                return prov[0];
             }
         }
     }

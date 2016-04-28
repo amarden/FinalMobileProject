@@ -26,7 +26,7 @@ namespace Client
     /// </summary>
     public sealed partial class PatientPage : Page
     {
-        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient("http://localhost:6163");
+        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
         private PatientScreenData screenData = new PatientScreenData();
 
         public PatientPage()
@@ -79,6 +79,11 @@ namespace Client
         private void navToProcedure(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(ProcedurePage), this.screenData);
+        }
+
+        private void navToImage(object sender, TappedRoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(ImagingPage), this.screenData);
         }
 
         private void navToChat(object sender, TappedRoutedEventArgs e)

@@ -27,7 +27,7 @@ namespace Client
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient("https://mardenfinalproject.azurewebsites.net/");
+        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
 
         public class ProviderType
         {

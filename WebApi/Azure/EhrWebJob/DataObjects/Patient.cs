@@ -10,10 +10,6 @@ namespace Azure.DataObjects
         public Patient()
         {
             Biometrics = new HashSet<Biometric>();
-            PatientProcedures = new HashSet<PatientProcedure>();
-            PatientChatLogs = new HashSet<PatientChatLog>();
-            PatientImagings = new HashSet<PatientImaging>();
-            PatientProviders = new HashSet<PatientProvider>();
         }
 
         [Key]
@@ -28,11 +24,6 @@ namespace Azure.DataObjects
         public DateTime? AssignDate{ get; set; }
         public DateTime? DischargeDate { get; set; }
         public virtual ICollection<Biometric> Biometrics { get; set; }
-        public virtual ICollection<PatientProcedure> PatientProcedures { get; set; }
-        public virtual ICollection<PatientChatLog> PatientChatLogs { get; set; }
-        public virtual ICollection<PatientImaging> PatientImagings { get; set; }
-        public virtual ICollection<PatientProvider> PatientProviders { get; set; }
-        public virtual DiagnosisCode DiagnosisCode { get; set; }
 
     }
 }

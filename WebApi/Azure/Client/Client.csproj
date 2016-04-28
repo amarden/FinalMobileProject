@@ -32,7 +32,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -110,6 +110,7 @@
     <Compile Include="ClientObjects\PatientScreenData.cs" />
     <Compile Include="ClientObjects\PatientToDo.cs" />
     <Compile Include="ClientObjects\ProcedureCode.cs" />
+    <Compile Include="ClientObjects\SubmitImage.cs" />
     <Compile Include="ClientObjects\ToDoItem.cs" />
     <Compile Include="ClientObjects\User.cs" />
     <Compile Include="ClientObjects\ViewChatLog.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="ProviderPage.xaml.cs">
       <DependentUpon>ProviderPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ServerInfo.cs" />
     <Compile Include="SuperUserPage.xaml.cs">
       <DependentUpon>SuperUserPage.xaml</DependentUpon>
     </Compile>
