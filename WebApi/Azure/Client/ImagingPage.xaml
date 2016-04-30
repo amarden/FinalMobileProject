@@ -60,10 +60,10 @@
             <!--<Image Name="PatientImage" />-->
             <!--<TextBlock Text="Upload New Image" HorizontalAlignment="Center" FontSize="25" />-->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                <RadioButton Content="MRI" Tag="Green" Checked="BGRadioButton_Checked" />
+                <!--<RadioButton Content="MRI" Tag="Green" Checked="BGRadioButton_Checked" />
                 <RadioButton Content="X-Ray" Tag="Yellow" Checked="BGRadioButton_Checked" />
                 <RadioButton Content="CT Scan" Tag="Blue" Checked="BGRadioButton_Checked" />
-                <RadioButton Content="Ultrasound" Tag="White" Checked="BGRadioButton_Checked" />
+                <RadioButton Content="Ultrasound" Tag="White" Checked="BGRadioButton_Checked" />-->
             </StackPanel>
             <Button Content="Add Image" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="58" Width="200" Tapped="addImage" />
         </Grid>

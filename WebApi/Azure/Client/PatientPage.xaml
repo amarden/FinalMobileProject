@@ -13,7 +13,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="10*"></RowDefinition>
-            <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
         <ProgressBar Name="MyProgressBar" IsIndeterminate="False" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="Transparent"></ProgressBar>
         <Grid Grid.Row="0" DataContext="{Binding User}">
@@ -138,18 +137,6 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </Grid>
-        </Grid>
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="navToProviders">Providers</Button>
-            <Button Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="navToProcedure">Procedures</Button>
-            <Button Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="navToImage">Imaging</Button>
-            <Button Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="navToChat" >Chat</Button>
         </Grid>
     </Grid>
 </Page>
