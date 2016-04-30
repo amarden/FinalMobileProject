@@ -193,6 +193,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="app\dist\" />
+    <Folder Include="app\src\" />
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +210,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="gulpfile.js" />
     <Content Include="scripts\ai.0.15.0-build58334.js" />
     <Content Include="scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="StartingData\DiagnosisCodes.txt" />
@@ -271,6 +274,8 @@
     <Compile Include="Temporary\FakeUser.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="package.json" />
+    <Content Include="bower.json" />
     <None Include="Properties\PublishProfiles\MardenFinalProject - Web Deploy.pubxml" />
     <Content Include="Properties\webjobs-list.json" />
     <None Include="Web.Debug.config">
@@ -280,7 +285,9 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
