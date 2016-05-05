@@ -1,4 +1,4 @@
-angular.module("proposalTemplate")
+angular.module("ehrDashboard")
 .directive("bubbleChart", function(){
     return {
         restrict : 'E',

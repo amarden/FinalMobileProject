@@ -8,6 +8,7 @@ namespace Azure.ClientObjects
     public class ViewPatientProvider
     {
         public int ProviderPatientId { get; set; }
+        public int ProviderId { get; set; }
         public string Role { get; set; }
         public string Name { get; set; }
     }

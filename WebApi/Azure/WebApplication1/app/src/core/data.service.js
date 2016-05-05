@@ -1,13 +1,9 @@
-angular.module("proposalTemplate")
+angular.module("ehrDashboard")
     .service("Data", function($http){
-        this.getDiagnoses = function() {
+        this.getData = function () {
+            return $http.get("api/Dashboard")
+                .then(function (data) {
+                    return data;
+                });
         };
-
-        this.getProcedures = function() {
-        };
-
-        this.getPatientInfo = function() {
-
-        };
-
     });

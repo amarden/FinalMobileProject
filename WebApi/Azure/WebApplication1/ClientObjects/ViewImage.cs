@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
-namespace Azure.ClientObjects
+namespace Client.ClientObjects
 {
-    public class ViewDocument
+    public class ViewImage
     {
-        public int PatientImagingId { get; set; }
-        public string ImageType { get; set; }
-        public string ImageName { get; set; }
-        public DateTime UploadDate { get; set; }
+        public byte[] ImageData;
     }
 }

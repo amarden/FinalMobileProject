@@ -17,12 +17,11 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="10*"></RowDefinition>
             <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" DataContext="{Binding User}">
+        <Grid Grid.Row="0" DataContext="{Binding User}" Background="LightBlue">
             <TextBlock Text="Procedure List" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="20 0 0 0"></TextBlock>
             <TextBlock Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20 0 0 0"></TextBlock>
             <TextBlock Text="{Binding Role}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 20 0"></TextBlock>

@@ -1,4 +1,4 @@
-﻿angular.module("proposalTemplate")
+﻿angular.module("ehrDashboard")
     .factory("LineOptions", function () {
         return {
             defaults: [

@@ -1,4 +1,4 @@
-﻿angular.module("proposalTemplate")
+﻿angular.module("ehrDashboard")
     .directive("simpleLineChart", function ($timeout, LineOptions) {
     return {
         restrict: 'E',

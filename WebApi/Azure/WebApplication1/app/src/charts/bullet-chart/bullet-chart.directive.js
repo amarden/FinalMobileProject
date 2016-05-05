@@ -1,4 +1,4 @@
-﻿angular.module('proposalTemplate')
+﻿angular.module('ehrDashboard')
     .directive("bulletChart", function ($timeout) {
         return {
             restrict: 'E',

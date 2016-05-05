@@ -1,4 +1,4 @@
-angular.module("proposalTemplate")
+angular.module("ehrDashboard")
 .directive("boxWhisker", function(){
     return {
         restrict : 'E',

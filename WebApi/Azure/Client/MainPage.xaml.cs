@@ -96,5 +96,10 @@ namespace Client
                 await dialog.ShowAsync();
             }
         }
+
+        private void temp(object sender, TappedRoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(ViewImage));
+        }
     }
 }

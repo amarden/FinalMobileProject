@@ -37,6 +37,7 @@ namespace Client
     {
         private PatientScreenData screenData = new PatientScreenData();
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
+        private string imageType { get; set; }
 
         public ImagingPage()
         {
@@ -53,75 +54,77 @@ namespace Client
         private async void populateImages()
         {
             Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
-            List<ViewPatientProcedure> patientProcedures = await MobileServiceDotNet.InvokeApiAsync<List<ViewPatientProcedure>>("patientimaging", HttpMethod.Get, parameters);
-            //ImageList.ItemsSource = patientProcedures;
+            List<PatientImaging> patientImages = await MobileServiceDotNet.InvokeApiAsync<List<PatientImaging>>("patientimaging", HttpMethod.Get, parameters);
+            ImageList.ItemsSource = patientImages;
         }
 
         private async void addImage(object sender, RoutedEventArgs e)
         {
-            FileOpenPicker fp = new FileOpenPicker(); // Adding filters for the file type to access.         
-            fp.FileTypeFilter.Add(".jpeg");
-            fp.FileTypeFilter.Add(".png");
-            fp.FileTypeFilter.Add(".pf");
-            fp.FileTypeFilter.Add(".jpg");
-            // Using PickSingleFileAsync() will return a storage file which can be saved into an object of storage file class.          
-            StorageFile sf = await fp.PickSingleFileAsync();
-            // Adding bitmap image object to store the stream provided by the object of StorageFile defined above.BitmapImage bmp = new BitmapImage();           
-            // Reading file as a stream and saving it in an object of IRandomAccess. 
-            byte[] fileBytes = null;
-            using (IRandomAccessStreamWithContentType stream = await sf.OpenReadAsync())
+            try
             {
-                fileBytes = new byte[stream.Size];
-                using (DataReader reader = new DataReader(stream))
+                if (this.imageType == "" || this.imageType == null)
                 {
-                    await reader.LoadAsync((uint)stream.Size);
-                    reader.ReadBytes(fileBytes);
+                    throw new Exception();
                 }
+                FileOpenPicker fp = new FileOpenPicker(); // Adding filters for the file type to access.         
+                fp.FileTypeFilter.Add(".jpeg");
+                fp.FileTypeFilter.Add(".png");
+                fp.FileTypeFilter.Add(".pf");
+                fp.FileTypeFilter.Add(".jpg");
+                // Using PickSingleFileAsync() will return a storage file which can be saved into an object of storage file class.          
+                StorageFile sf = await fp.PickSingleFileAsync();
+                // Adding bitmap image object to store the stream provided by the object of StorageFile defined above.BitmapImage bmp = new BitmapImage();           
+                // Reading file as a stream and saving it in an object of IRandomAccess. 
+                byte[] fileBytes = null;
+                using (IRandomAccessStreamWithContentType stream = await sf.OpenReadAsync())
+                {
+                    fileBytes = new byte[stream.Size];
+                    using (DataReader reader = new DataReader(stream))
+                    {
+                        await reader.LoadAsync((uint)stream.Size);
+                        reader.ReadBytes(fileBytes);
+                    }
+                }
+                BitmapImage tempBitMap = new BitmapImage(new Uri(sf.Path));
+                PatientImage.Source = tempBitMap;
+                PatientImage.Visibility = Visibility.Visible;
+                Stream fileStream = new MemoryStream(fileBytes);
+                submitImage(fileBytes);
             }
-            BitmapImage tempBitMap = new BitmapImage(new Uri(sf.Path));
-            PatientImage.Source = tempBitMap;
-            PatientImage.Visibility = Visibility.Visible;
-            Stream fileStream = new MemoryStream(fileBytes);
-            submitImage(fileBytes);
+            catch
+            {
+                var message = "Please choose image type before uploading an image";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
+            }
         }
-
-        
 
         private async void submitImage(byte[] imageStream)
         {
             MyProgressBar.IsIndeterminate = true;
             var newImage = new SubmitImage();
-            //try
-            //{
+            try
+            {
                 newImage.ImageStream = imageStream;
                 newImage.PatientId = this.screenData.Patient.PatientId;
                 newImage.ImageType = "MRI";
                 var data = JToken.FromObject(newImage);
                 await MobileServiceDotNet.InvokeApiAsync("patientimaging", data);
+                this.imageType = "";
                 populateImages();
-            //}
-            //catch
-            //{
-                //var message = "There was an error while trying to add a provider";
-                //var dialog = new MessageDialog(message);
-                //dialog.Commands.Add(new UICommand("OK"));
-                //await dialog.ShowAsync();
-            //}
-            //finally
-            //{
-            //    MyProgressBar.IsIndeterminate = false;
-            //}
-        }
-
-        private PatientProcedure createAssignment(string id)
-        {
-            PatientProcedure pp = new PatientProcedure();
-            pp.AssignedTime = DateTime.Now;
-            pp.ProcedureCodeId = Convert.ToInt32(id);
-            pp.PatientId = this.screenData.Patient.PatientId;
-            pp.Completed = false;
-            pp.CompletedTime = null;
-            return pp;
+            }
+            catch
+            {
+                var message = "There was an error while trying to add a provider";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
+            }
+            finally
+            {
+                MyProgressBar.IsIndeterminate = false;
+            }
         }
 
         private void navToPatient(object sender, TappedRoutedEventArgs e)
@@ -129,10 +132,21 @@ namespace Client
             this.Frame.Navigate(typeof(PatientPage), this.screenData);
         }
 
-        private void test(object sender, TappedRoutedEventArgs e)
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            string la = "la";
-            string test = "fa";
+            var obj = (RadioButton)sender;
+            this.imageType = obj.Content.ToString();
+        }
+
+        private async void viewImage(object sender, TappedRoutedEventArgs e)
+        {
+            MyProgressBar.IsIndeterminate = true;
+            var button = (Button)sender;
+            var grid = (Grid)button.Parent;
+            var idElement = (TextBlock)grid.Children.First();
+            var id = idElement.Text;
+            var data = new ImageNavScreenData() { BlobId = id, screenData = this.screenData };
+            this.Frame.Navigate(typeof(ViewImage), data);
         }
     }
 }

@@ -29,6 +29,7 @@ namespace Client
     {
         private PatientScreenData screenData = new PatientScreenData();
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
+        private List<ViewPatientProvider> providers;
 
         public ProviderPage()
         {
@@ -51,7 +52,7 @@ namespace Client
         private async void populatePatientProvider(bool requery)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
-            var providers = await MobileServiceDotNet.InvokeApiAsync<List<ViewPatientProvider>>("assignment", HttpMethod.Get, parameters);
+            this.providers = await MobileServiceDotNet.InvokeApiAsync<List<ViewPatientProvider>>("assignment", HttpMethod.Get, parameters);
             ProviderList.ItemsSource = providers;
         }
 
@@ -64,6 +65,7 @@ namespace Client
             var id = idElement.Text;
             try
             {
+       
                 Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientProviderId"] = id };
                 await MobileServiceDotNet.InvokeApiAsync("assignment", HttpMethod.Delete, parameters);
                 populatePatientProvider(true);
@@ -91,9 +93,21 @@ namespace Client
             var assignment = createAssignment(id);
             try
             {
+                if (this.providers.Any(x => x.ProviderId == Convert.ToInt32(id)))
+                {
+                    throw new InvalidDataException();
+                }
                 var data = JToken.FromObject(assignment);
                 await MobileServiceDotNet.InvokeApiAsync("assignment", data);
                 populatePatientProvider(true);
+
+            }
+            catch (InvalidDataException)
+            {
+                var message = "The provider you chose was already assigned";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
             }
             catch
             {

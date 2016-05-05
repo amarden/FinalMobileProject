@@ -1,4 +1,4 @@
-angular.module("proposalTemplate")
+angular.module("ehrDashboard")
 .directive("barSpark", function(){
     return {
         restrict : 'E',

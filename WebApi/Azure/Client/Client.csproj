@@ -104,6 +104,7 @@
       <DependentUpon>ChatPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientObjects\Biometric.cs" />
+    <Compile Include="ClientObjects\ImageNavScreenData.cs" />
     <Compile Include="ClientObjects\Patient.cs" />
     <Compile Include="ClientObjects\PatientChatLog.cs" />
     <Compile Include="ClientObjects\PatientImaging.cs" />
@@ -123,7 +124,6 @@
     <Compile Include="ClientObjects\ViewProvider.cs" />
     <Compile Include="ClientObjects\ViewSupportProcedure.cs" />
     <Compile Include="Converters\CustomIsDischargeConverter.cs" />
-    <Compile Include="Converters\CustomDischargeConverter.cs" />
     <Compile Include="Converters\CustomIsNotNurseConverter.cs" />
     <Compile Include="Converters\CustomProcedureConverter.cs" />
     <Compile Include="Converters\CustomIsNurseConverter.cs" />
@@ -153,6 +153,9 @@
     <Compile Include="ServerInfo.cs" />
     <Compile Include="SuperUserPage.xaml.cs">
       <DependentUpon>SuperUserPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewImage.xaml.cs">
+      <DependentUpon>ViewImage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -210,6 +213,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SuperUserPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewImage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

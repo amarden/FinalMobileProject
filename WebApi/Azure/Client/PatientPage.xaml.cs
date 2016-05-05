@@ -37,10 +37,24 @@ namespace Client
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             this.screenData = (PatientScreenData)e.Parameter;
-            this.DataContext = screenData;
-            if (screenData.Patient.Name == null)
+            getPatient(screenData.Patient.PatientId);
+        }
+
+        private void hideShowDischargeBtn()
+        {
+            var patient = this.screenData.Patient;
+            var user = this.screenData.User;
+            if ((patient.MedicalStatus == "stable" || patient.MedicalStatus == "critical") && user.Role == "Physician")
             {
-                getPatient(screenData.Patient.PatientId);
+                DischargeBtn.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                DischargeBtn.Visibility = Visibility.Collapsed;
+            }
+            if(patient.MedicalStatus == "discharge")
+            {
+                DischargeDateText.Text = "Discharge Data: " + this.screenData.Patient.DischargeDate.Value.ToString();
             }
         }
 
@@ -56,6 +70,7 @@ namespace Client
                     this.screenData.Patient = resultJson;
                     BiometricList.ItemsSource = screenData.Patient.Biometrics;
                     this.DataContext = screenData;
+                    hideShowDischargeBtn();
                 }
             }
             catch
@@ -93,8 +108,25 @@ namespace Client
 
         private async void discharge(object sender, TappedRoutedEventArgs e)
         {
-            var parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
-            await MobileServiceDotNet.InvokeApiAsync("Patient", HttpMethod.Put, parameters);
+            MyProgressBar.IsIndeterminate = true;
+            try
+            {
+                var parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
+                await MobileServiceDotNet.InvokeApiAsync("Patient", HttpMethod.Put, parameters);
+                getPatient(this.screenData.Patient.PatientId);
+                hideShowDischargeBtn();
+            }
+            catch
+            {
+                var message = "There was an error while trying to discharge this patient";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
+            }
+            finally
+            {
+                MyProgressBar.IsIndeterminate = false;
+            }
         }
 
         private void backToPatients(object sender, TappedRoutedEventArgs e)

@@ -1,4 +1,4 @@
-﻿angular.module('proposalTemplate')
+﻿angular.module('ehrDashboard')
     .directive("stackBarChart", function ($timeout, ChartOptions) {
         return {
             restrict: 'E',

@@ -34,6 +34,11 @@ namespace Azure.EhrAssets
             }
         }
 
+        public EHR(bool test)
+        {
+        }
+
+
         public void CreateNewPatients(int number)
         {
             List<Patient> patientsToAdd = new List<Patient>();
@@ -61,7 +66,7 @@ namespace Azure.EhrAssets
             }
         }
 
-        private PatientProvider assignToRandomAdministrator()
+        public PatientProvider assignToRandomAdministrator()
         {
             var pp = new PatientProvider();
             var administratorCount = this.administrators.Count;
@@ -84,23 +89,33 @@ namespace Azure.EhrAssets
             return b;
         }
 
-        private Tuple<string, int> imputeStatus(IEnumerable<Biometric> allMeasures, Biometric measure)
+        public int getDeathModifierCalculated(int lengthOfStay, Biometric measure)
         {
-            int lengthOfStay = allMeasures.Count();
-            int averageDeathModifier = lengthOfStay == 0 ? 0 : (int)Math.Round(allMeasures.Average(x => x.DeathModifier)/10);
-            int minRandomModifider = -15 + averageDeathModifier;
-            int pastDeathModifier = r.Next(minRandomModifider, 10);
+
             //status for each measurement can be stable, unstable, or critical
             string bpStatus = checkBpStatus(measure.Systolic, measure.Diastolic);
             string glucoseStatus = checkGlucoseStatus(measure.Glucose);
             string oxygenStatus = checkOxygenStatus(measure.Oxygen);
+
 
             //Calculate deathModifier that raises likelihood of patient death or critical status
             List<string> statuses = new List<string> { bpStatus, glucoseStatus, oxygenStatus };
             int criticalCount = statuses.Where(x => x == "critical").Count();
             int unstableCount = statuses.Where(x => x == "unstable").Count();
             int stableCount = statuses.Where(x => x == "stable").Count();
-            int deathModifier = lengthOfStay + (criticalCount * 10) + (unstableCount * 2) + (-stableCount * 2) + pastDeathModifier;
+
+            return lengthOfStay + (criticalCount * 10) + (unstableCount * 2) + (-stableCount * 2);
+        }
+
+        public Tuple<string, int> imputeStatus(IEnumerable<Biometric> allMeasures, Biometric measure)
+        {
+            int lengthOfStay = allMeasures.Count();
+            int averageDeathModifier = lengthOfStay == 0 ? 0 : (int)Math.Round(allMeasures.Average(x => x.DeathModifier)/10);
+
+            int minRandomModifider = -5 + averageDeathModifier;
+            int pastDeathModifier = r.Next(minRandomModifider, 10);
+
+            int deathModifier = getDeathModifierCalculated(lengthOfStay, measure) + pastDeathModifier;
             int chanceOfDeath = lengthOfStay == 0 ? 0 : deathModifier; //Cannot be dead on first measurement
             int randomInt = r.Next(0, 100);
             string patientStatus;
@@ -120,7 +135,7 @@ namespace Azure.EhrAssets
 
         }
 
-        private string checkOxygenStatus(int oxygen)
+        public string checkOxygenStatus(int oxygen)
         {
             string status;
             if (this.oxygenStableRange.Item1 <= oxygen && this.oxygenStableRange.Item2 >= oxygen)
@@ -139,7 +154,7 @@ namespace Azure.EhrAssets
         }
 
 
-        private string checkGlucoseStatus(int glucose)
+        public string checkGlucoseStatus(int glucose)
         {
             string status;
             if (this.glucoseStableRange.Item1 <= glucose && this.glucoseStableRange.Item2 >= glucose)
@@ -157,7 +172,7 @@ namespace Azure.EhrAssets
             return status;
         }
 
-        private string checkBpStatus(int systolic, int diastolic)
+        public string checkBpStatus(int systolic, int diastolic)
         {
             string status;
             if(this.systolicStableRange.Item1 <= systolic && this.systolicStableRange.Item2 >= systolic
@@ -177,7 +192,7 @@ namespace Azure.EhrAssets
             return status;
         }
 
-        private Biometric generateBiometric(Patient patient)
+        public Biometric generateBiometric(Patient patient)
         {
             Biometric newReading = new Biometric();
             var lastReading = patient.Biometrics.OrderByDescending(x => x.MeasurementDate).First();
@@ -191,7 +206,7 @@ namespace Azure.EhrAssets
             return newReading;
         }
 
-        private int generateGlucose(string status, Biometric lastReading)
+        public int generateGlucose(string status, Biometric lastReading)
         {
             int maxChange = status == "critical" ? 25 : 10;
             var percentChange = r.Next(-maxChange, maxChange) / 100f;
@@ -199,7 +214,7 @@ namespace Azure.EhrAssets
             return newGlucose;
         }
 
-        private Tuple<int, int> generateBloodPressure(string status, Biometric lastReading)
+        public Tuple<int, int> generateBloodPressure(string status, Biometric lastReading)
         {
             int maxChange = status == "critical" ? 20 : 10;
             var percentChange = r.Next(-maxChange, maxChange) / 100f;
@@ -209,7 +224,7 @@ namespace Azure.EhrAssets
             return new Tuple<int, int>(newSystolic, newDiastolic);
         }
 
-        private int generateOxygen(string status, Biometric lastReading)
+        public int generateOxygen(string status, Biometric lastReading)
         {
             int maxChange = status == "critical" ? 10 : 5;
             var percentChange = r.Next(-maxChange, maxChange) / 100f;
@@ -218,24 +233,24 @@ namespace Azure.EhrAssets
             return newOxygen;
         }
 
-        private int generateDiagnosis(int age)
+        public int generateDiagnosis(int age)
         {
             return r.Next(1, 20);
         }
 
-        private int generateAge()
+        public int generateAge()
         {
             return r.Next(0, 100);
         }
 
-        private string generateGender()
+        public string generateGender()
         {
             int rInt = r.Next(1, 3);
             string gender = rInt == 1 ? "male" : "female";
             return gender;
         }
 
-        private string generateName(string gender)
+        public string generateName(string gender)
         {
             string name="";
             if(gender == "male")

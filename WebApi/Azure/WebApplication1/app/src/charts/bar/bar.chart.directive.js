@@ -1,4 +1,4 @@
-﻿angular.module("proposalTemplate")
+﻿angular.module("ehrDashboard")
     .directive("barChart", function (BarOptions) {
         return {
             restrict: 'E',
@@ -14,7 +14,6 @@
                 var y = scope.group || 'group';
                 var x = scope.unit || 'unit';
                 var drawn = false;
-                var color = d3.scale.ordinal().domain(["Billable", "Proposal", "Overhead"]).range(["blue", "purple", "red"]);
                 var barTip;
                 var svg;
 
@@ -22,17 +21,7 @@
                     w = config.width ? config.width : elem[0].offsetWidth;
                     h = config.height ? config.height : elem[0].offsetHeight;
                     svg = d3.select(elem[0]).append("svg")
-                        .attr("width", w).attr("height", h)
-                       .on("mouseover", function () {
-                           d3.select(this).selectAll(".to-show")
-                                  .transition().duration(500)
-                                  .style("opacity", 1);
-                       })
-                        .on("mouseout", function () {
-                            d3.select(this).selectAll(".to-show")
-                                .transition().duration(500)
-                                .style("opacity", 0);
-                        });
+                        .attr("width", w).attr("height", h);
 
                     svg.append("text")
                        .attr("class", "title")
@@ -103,9 +92,9 @@
                         xAxis.ticks(5);
                     }
 
-                    //svg.select("g.x-axis")
-                    //    .transition().duration(500)
-                    //    .call(xAxis);
+                    svg.select("g.x-axis")
+                        .transition().duration(500)
+                        .call(xAxis);
 
                     console.log(data, y, x);
 

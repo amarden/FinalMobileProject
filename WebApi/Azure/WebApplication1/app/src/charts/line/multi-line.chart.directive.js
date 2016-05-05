@@ -1,4 +1,4 @@
-﻿angular.module('proposalTemplate')
+﻿angular.module('ehrDashboard')
     .directive("lineChart", function (ChartOptions) {
     return {
         restrict: 'E',

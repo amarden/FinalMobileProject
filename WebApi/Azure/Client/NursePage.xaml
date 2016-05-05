@@ -14,7 +14,7 @@
                 <RowDefinition Height="10*"></RowDefinition>
             </Grid.RowDefinitions>
             <ProgressBar Name="MyProgressBar" IsIndeterminate="False" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="Transparent"></ProgressBar>
-            <Grid Grid.Row="0" DataContext="{Binding User}">
+            <Grid Grid.Row="0" DataContext="{Binding User}" Background="LightBlue">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>

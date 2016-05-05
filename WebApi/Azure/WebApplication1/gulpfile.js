@@ -24,14 +24,15 @@ gulp.task('buildVendor', function () {
         'bower_components/angular*/*.min.js',
         'bower_components/angular-ui-router/release/*.min.js',
         'bower_components/d3/d3.min.js',
+        'bower_components/d3-tip/index.js',
         'bower_components/underscore/underscore-min.js'])
       .pipe(concat('vendor.min.js'))
       .pipe(gulp.dest('app/dist'));
 });
 
 gulp.task('buildCSS', function () {
-    //merge the two streams and concatenate their contents into a single file
-    return  gulp.src(['bower_components/angular-material/angular-material.css'])
+    return gulp.src(['bower_components/angular-material/angular-material.css',
+                    'app/src/content/style/app.css'])
         .pipe(concat('app.min.css'))
         .pipe(minifycss())
         .pipe(gulp.dest('app/dist'));
@@ -57,10 +58,9 @@ gulp.task('test', ['karma', 'jshint']);
 // ***************************************
 
 gulp.task('watch', function () {
-    gulp.watch('src/**/*.js', ['buildApp', 'jshint']);
-    gulp.watch('test/**/*.js', ['jshint']);
-    gulp.watch('src/content/style/*.scss', ['buildCSS']);
-    gulp.watch('src/**/*.html', ['moveHTML']);
+    gulp.watch('app/src/**/*.js', ['buildApp', 'jshint']);
+    gulp.watch('app/src/content/style/*.css', ['buildCSS']);
+    gulp.watch('app/src/**/*.html', ['moveHTML']);
 });
 
 // *******************************************

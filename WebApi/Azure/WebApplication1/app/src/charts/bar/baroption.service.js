@@ -1,4 +1,4 @@
-﻿angular.module("proposalTemplate")
+﻿angular.module("ehrDashboard")
     .factory("BarOptions", function () {
         return {
             defaults: [

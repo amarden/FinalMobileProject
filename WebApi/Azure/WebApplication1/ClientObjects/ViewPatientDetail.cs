@@ -13,6 +13,7 @@ namespace Azure.ClientObjects
         public string MedicalStatus { get; set; }
         public string Diagnosis { get; set; }
         public DateTime AdmitDate { get; set; }
+        public DateTime? DischargeDate { get; set; }
         public virtual ICollection<Biometric> Biometrics { get; set; }
         public int ChatActivityNumber { get; set; }
         public int ProcedureNumber { get; set; }

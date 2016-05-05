@@ -1,4 +1,4 @@
-﻿angular.module('proposalTemplate')
+﻿angular.module('ehrDashboard')
     .directive("groupBar", function ($location) {
     return {
         restrict: 'E',

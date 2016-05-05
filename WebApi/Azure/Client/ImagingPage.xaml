@@ -14,15 +14,15 @@
             <RowDefinition Height="3*"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" DataContext="{Binding User}">
-            <TextBlock Text="Procedure List" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="20 0 0 0"></TextBlock>
+        <Grid Grid.Row="0" DataContext="{Binding User}" Background="LightBlue">
+            <TextBlock Text="Image List" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="20 0 0 0"></TextBlock>
             <TextBlock Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20 0 0 0"></TextBlock>
             <TextBlock Text="{Binding Role}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 20 0"></TextBlock>
             <ProgressBar Name="MyProgressBar" IsIndeterminate="False" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="Transparent"></ProgressBar>
         </Grid>
         <Grid Grid.Row="1">
             <Image Name="PatientImage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-            <!--<Grid HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="{Binding ActualWidth, ElementName=ImageList}">
+            <Grid HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="{Binding ActualWidth, ElementName=ImageList}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -30,7 +30,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Margin="20,0,0,0" Grid.Column="0" Text="Type" TextWrapping="Wrap" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
                 <TextBlock Margin="20,0,0,0" Grid.Column="1" Text="Date" TextWrapping="Wrap" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
-                <TextBlock Margin="20,0,0,0" Grid.Column="2" Text="Download" TextWrapping="Wrap" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+                <TextBlock Margin="20,0,0,0" Grid.Column="2" Text="View" TextWrapping="Wrap" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
             </Grid>
             <ListView Grid.Column="1" Name="ImageList" ScrollViewer.VerticalScrollMode="Auto" Margin="0 50 0 0">
                 <ListView.ItemTemplate>
@@ -44,8 +44,8 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Margin="20,0,0,0" Grid.Column="0" Text="{Binding ImageBlobId}" Visibility="Collapsed" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
                             <TextBlock Margin="20,0,0,0" Grid.Column="0" Text="{Binding ImageType}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
-                            <TextBlock Margin="20,0,0,0" Grid.Column="0" Text="{Binding UploadDate}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
-                            <Button Margin="20,0,0,0" Grid.Column="0" Content="Retrieve" VerticalAlignment="Center" HorizontalAlignment="Left"></Button>
+                            <TextBlock Margin="20,0,0,0" Grid.Column="1" Text="{Binding UploadDate}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                            <Button Margin="20,0,0,0" Grid.Column="2" Content="View" VerticalAlignment="Center" HorizontalAlignment="Center" Tapped="viewImage"></Button>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -54,18 +54,27 @@
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     </Style>
                 </ListView.ItemContainerStyle>
-            </ListView>-->
+            </ListView>
         </Grid>
         <Grid Grid.Row="2">
             <!--<Image Name="PatientImage" />-->
             <!--<TextBlock Text="Upload New Image" HorizontalAlignment="Center" FontSize="25" />-->
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                <!--<RadioButton Content="MRI" Tag="Green" Checked="BGRadioButton_Checked" />
-                <RadioButton Content="X-Ray" Tag="Yellow" Checked="BGRadioButton_Checked" />
-                <RadioButton Content="CT Scan" Tag="Blue" Checked="BGRadioButton_Checked" />
-                <RadioButton Content="Ultrasound" Tag="White" Checked="BGRadioButton_Checked" />-->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center">
+                <RadioButton Content="MRI" Tag="Green" Checked="RadioButton_Checked" />
+                <RadioButton Content="X-Ray" Tag="Yellow" Checked="RadioButton_Checked" />
+                <RadioButton Content="CT Scan" Tag="Blue" Checked="RadioButton_Checked" />
+                <RadioButton Content="Ultrasound" Tag="White" Checked="RadioButton_Checked" />
             </StackPanel>
             <Button Content="Add Image" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="58" Width="200" Tapped="addImage" />
+        </Grid> 
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="navToPatient">Back to Patient Page</Button>
         </Grid>
     </Grid>
 </Page>
