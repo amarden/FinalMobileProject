@@ -25,9 +25,33 @@
             var groupDiag = _.groupBy(patient, "diagnosis");
             metric.topDiagnoses = _.map(groupDiag, function (data, key) {
                 return {
-                    diagnosis: key,
+                    group: key,
                     number: data.length
-                }
+                };
+            });
+
+            var procDiag = _.groupBy(_.flatten(patient.map(function (d) { return d.procedures.map(function (x) { return x.ProcedureCode.Procedure; }) })));
+            metric.topProcedures = _.map(procDiag, function (data, key) {
+                return {
+                    group: key,
+                    number: data.length
+                };
+            });
+
+            var roleGroup = _.groupBy(provider.map(function (d) { return d.Role; }));
+            metric.roleCount = _.map(roleGroup, function (data, key) {
+                return {
+                    group: key,
+                    number: data.length
+                };
+            });
+
+            var statusGroup = _.groupBy(patient.map(function (d) { return d.MedicalStatus; }));
+            metric.statusCount = _.map(statusGroup, function (data, key) {
+                return {
+                    group: key,
+                    number: data.length
+                };
             });
 
             return metric;

@@ -10,6 +10,7 @@
             },
             link: function (scope, elem) {
                 var config = BarOptions.generateOptions(scope.options);
+                config.margin.left = 250;
                 var w, h;
                 var y = scope.group || 'group';
                 var x = scope.unit || 'unit';
@@ -20,6 +21,7 @@
                 var createChart = function () {
                     w = config.width ? config.width : elem[0].offsetWidth;
                     h = config.height ? config.height : elem[0].offsetHeight;
+                    h = 185;
                     svg = d3.select(elem[0]).append("svg")
                         .attr("width", w).attr("height", h);
 
@@ -36,7 +38,7 @@
                         .attr("transform", "translate(" + config.margin.left + "," + config.margin.top + ")");
 
                     svg.select("g.chart").append("g")
-                        .attr("class", "x-axis")
+                        .attr("class", "axis")
                         .attr("transform", "translate(0,5)");
 
                     if (config.tooltip) {
@@ -67,8 +69,7 @@
                     var yScaleHeight = Math.max(h - config.margin.top, data.length * 13);
                     if (data.length * 13 > h - config.margin.top) {
                         svg.attr("height", (data.length * 13 + config.margin.top));
-                    }
-                    else {
+                    } else {
                         svg.attr("height", h);
                     }
                     d3.select(elem[0]).style("height", h + "px");
@@ -92,11 +93,9 @@
                         xAxis.ticks(5);
                     }
 
-                    svg.select("g.x-axis")
+                    svg.select("g.axis")
                         .transition().duration(500)
                         .call(xAxis);
-
-                    console.log(data, y, x);
 
                     var barContainer = svg.select("g.chart").selectAll("g.bars")
                         .data(data, function (d) { return d[y]; });

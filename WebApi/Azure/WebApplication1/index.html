@@ -11,8 +11,8 @@
     <div layout="column" flex layout-fill>
         <div layout="row" flex layout-padding>
             <div layout="column">
-                <div layout="column" flex>
-                    <md-subheader>Patient Metrics</md-subheader>
+                <div layout="column" class="metrics" flex>
+                    <md-subheader>Metrics</md-subheader>
                     <div flex>
                         <span class="metric-number">{{mc.processed.ageAverage}}</span>
                         <span class="metric-title">Average Age</span>
@@ -34,70 +34,41 @@
                         <div flex>
                             <ul>
                                 <li ng-repeat="item in mc.processed.topDiagnoses | orderBy:'number' | limitTo:'3'">
-                                    {{item.diagnosis}}
+                                    {{item.group}}
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div flex>
-                        <span class="metric-title">Top 3 Diagnoses</span>
+                        <span class="metric-title">Top 3 Procedures</span>
                         <div flex>
                             <ul>
-                                <li ng-repeat="item in mc.processed.topDiagnoses | orderBy:'number' | limitTo:'3'">
-                                    {{item.diagnosis}}
+                                <li ng-repeat="item in mc.processed.topProcedures | orderBy:'number' | limitTo:'3'">
+                                    {{item.group}}
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                <div flex>
-                    <md-subheader>Provider Metrics</md-subheader>
+            </div>
+            <div class="charts" flex layout="column">
+                <div layout="column" flex>
+                    <md-subheader>Provider Type - Count</md-subheader>
+                    <bar-chart flex data="mc.processed.roleCount" group="mc.groupDiag" unit="mc.unit"></bar-chart>
+                </div>
+                <div layout="column" flex>
+                    <md-subheader>Patient Status Mix - Count</md-subheader>
+                    <bar-chart flex data="mc.processed.statusCount" group="mc.groupDiag" unit="mc.unit"></bar-chart>
+                </div>
+                <div layout="column" flex>
+                    <md-subheader>Procedures - Count</md-subheader>
+                    <bar-chart flex data="mc.processed.topProcedures" group="mc.groupDiag" unit="mc.unit"></bar-chart>
+                </div>
+                <div layout="column" flex>
+                    <md-subheader>Diagnoses - Count</md-subheader>
+                    <bar-chart flex data="mc.processed.topDiagnoses" group="mc.groupDiag" unit="mc.unit"></bar-chart>
                 </div>
             </div>
-            <dix flex layout="column">
-                <div flex>
-                    <md-subheader>Demographics</md-subheader>
-                </div>
-                <div flex>
-                    <md-subheader>Patient Status Mix</md-subheader>
-                </div>
-                <div layout="column" flex>
-                    <md-subheader>Diagnoses</md-subheader>
-                    <bar-chart flex data="mc.processed.topDiagnoses" group="mc.groupDiag" unit="mc.unit"></bar-chart>
-                </div>
-                <div layout="column" flex>
-                    <md-subheader>Procedures</md-subheader>
-                    <bar-chart flex data="mc.processed.topDiagnoses" group="mc.groupDiag" unit="mc.unit"></bar-chart>
-                </div>
-            </dix>
-            <!--<div layout="column" flex="20">
-                <h3>Controls</h3>
-                <div flex layout="column">
-                    <md-subheader>Filters</md-subheader>
-                    <md-input-container>
-                        <label>Diagnosis</label>
-                        <md-select ng-model="mc.diagnosis">
-                            <md-option value="All">All</md-option>
-                            <md-option ng-repeat="item in mc.data.diagnoses" value="{{item.id}}">{{item.name}}</md-option>
-                        </md-select>
-                    </md-input-container>
-                    <md-input-container>
-                        <label>Procedures</label>
-                        <md-select ng-model="mc.procedure">
-                            <md-option value="All">All</md-option>
-                            <md-option ng-repeat="item in mc.data.procedures" value="{{item.id}}">{{item.name}}</md-option>
-                        </md-select>
-                    </md-input-container>
-                    <md-input-container>
-                        <label>Provider Type</label>
-                        <md-select ng-model="mc.procedure">
-                            <md-option value="All">All</md-option>
-                            <md-option value="Physician">Physician</md-option>
-                            <md-option value="Surgeon">Surgeon</md-option>
-                        </md-select>
-                    </md-input-container>
-                </div>
-            </div>-->
         </div>
     </div>
 </body>

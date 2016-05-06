@@ -207,7 +207,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app\dist\app.min.css" />
     <Content Include="app\dist\app.min.js" />
+    <Content Include="app\dist\vendor.min.js" />
     <Content Include="app\src\app.js" />
     <Content Include="app\src\charts\bar-spark.js" />
     <Content Include="app\src\charts\bar\bar.chart.directive.js" />
@@ -226,6 +228,8 @@
     <Content Include="app\src\content\style\app.css" />
     <Content Include="app\src\core\calculate.service.js" />
     <Content Include="app\src\core\data.service.js" />
+    <Content Include="app\src\core\home.html" />
+    <Content Include="app\src\core\home.controller.js" />
     <Content Include="app\src\core\main.controller.js" />
     <Content Include="app\src\data\array.extend.js" />
     <Content Include="Global.asax" />
