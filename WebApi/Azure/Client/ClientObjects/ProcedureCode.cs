@@ -1,5 +1,8 @@
 ﻿namespace Client.ClientObjects
 {
+    /// <summary>
+    /// Represents ProcedureCode table in SQL
+    /// </summary>
     public class ProcedureCode
     {
         public int ProcedureCodeId { get; set; }

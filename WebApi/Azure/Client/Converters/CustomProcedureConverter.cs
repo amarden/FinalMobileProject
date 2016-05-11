@@ -5,11 +5,15 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Web.ClientObjects;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
 namespace Client
 {
+    /// <summary>
+    /// Used to hide/show procedures basd on the user role
+    /// </summary>
     public class CustomProcedureConverter : IValueConverter
     {
         public Visibility TrueValue { get; set; }

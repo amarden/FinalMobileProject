@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Azure.DataObjects
 {
+    /// <summary>
+    /// Represents ProcedureCode table in SQL
+    /// </summary>
     public class ProcedureCode
     {
         [Key]

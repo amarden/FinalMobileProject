@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace Azure.EhrAssets
 {
+    /// <summary>
+    /// A class that tries to mock certain aspects of an EHR system. Primarily used for two things. 
+    /// One, to create new patients, and Two to generate fake biometrics for these patients
+    /// </summary>
     public class EHR
     {
         private List<DiagnosisCode> dxCodes = new List<DiagnosisCode>();
@@ -23,8 +27,12 @@ namespace Azure.EhrAssets
         private Tuple<int, int> diastolicCrticalBounds = new Tuple<int, int>(20, 120);
         private Tuple<int, int> glucoseCriticalBounds = new Tuple<int, int>(20, 160);
         private int oxygenCriticalLowerBound = 65;
+        //Random number generator used in several methods to generate fake data
         Random r = new Random();
 
+        /// <summary>
+        /// Constructr that populates who the administrator users are and what the possible diagnoses are
+        /// </summary>
         public EHR()
         {
             using (var db = new DataContext())
@@ -34,24 +42,31 @@ namespace Azure.EhrAssets
             }
         }
 
+        //Overloaded constructor used for testing
         public EHR(bool test)
         {
         }
 
-
+        /// <summary>
+        /// Method that creates the numbers of new patients based on the number
+        /// </summary>
+        /// <param name="number"></param>
         public void CreateNewPatients(int number)
         {
             List<Patient> patientsToAdd = new List<Patient>();
             for(int i=0; i< number; i++)
             {
+                //Generate some specfic information about the patient
                 var p = new Patient();
                 p.Gender = generateGender();
                 p.Name = generateName(p.Gender);
                 p.Age = generateAge();
                 p.AdmitDate = DateTime.Now;
-                p.DiagnosisCodeId = generateDiagnosis(p.Age);
+                p.DiagnosisCodeId = generateDiagnosis();
+                //Create the first biometrics of the user
                 var firstMetrics = initialValues();
                 PatientProvider assignedAdministrator = assignToRandomAdministrator();
+                //Based on biometrics we want to impute the patient satus and their deathmodifider used to calculate when they die or are critical
                 var statusAndScore = imputeStatus(p.Biometrics, firstMetrics);
                 firstMetrics.DeathModifier = statusAndScore.Item2;
                 p.MedicalStatus = statusAndScore.Item1;
@@ -66,6 +81,10 @@ namespace Azure.EhrAssets
             }
         }
 
+        /// <summary>
+        /// When a patient is created randomly assigns them to an existing administrator
+        /// </summary>
+        /// <returns></returns>
         public PatientProvider assignToRandomAdministrator()
         {
             var pp = new PatientProvider();
@@ -78,6 +97,10 @@ namespace Azure.EhrAssets
             return pp;
         }
 
+        /// <summary>
+        /// Randomly creates initial values for biometrics
+        /// </summary>
+        /// <returns></returns>
         public Biometric initialValues()
         {
             Biometric b = new Biometric();
@@ -89,9 +112,14 @@ namespace Azure.EhrAssets
             return b;
         }
 
+        /// <summary>
+        /// calcualtes the death modifier used to determine a patient's status
+        /// </summary>
+        /// <param name="lengthOfStay"></param>
+        /// <param name="measure"></param>
+        /// <returns>integer</returns>
         public int getDeathModifierCalculated(int lengthOfStay, Biometric measure)
         {
-
             //status for each measurement can be stable, unstable, or critical
             string bpStatus = checkBpStatus(measure.Systolic, measure.Diastolic);
             string glucoseStatus = checkGlucoseStatus(measure.Glucose);
@@ -107,6 +135,12 @@ namespace Azure.EhrAssets
             return lengthOfStay + (criticalCount * 10) + (unstableCount * 2) + (-stableCount * 2);
         }
 
+        /// <summary>
+        /// takes current biometric measure and all past biometric measures determines what the medicalstatus of a patient is
+        /// </summary>
+        /// <param name="allMeasures"></param>
+        /// <param name="measure"></param>
+        /// <returns>Tuple of medical status and death modifier</returns>
         public Tuple<string, int> imputeStatus(IEnumerable<Biometric> allMeasures, Biometric measure)
         {
             int lengthOfStay = allMeasures.Count();
@@ -135,6 +169,11 @@ namespace Azure.EhrAssets
 
         }
 
+        /// <summary>
+        /// Takes oxygen number and determines whether the range is stable, unstable, or critical
+        /// </summary>
+        /// <param name="oxygen"></param>
+        /// <returns>metric status</returns>
         public string checkOxygenStatus(int oxygen)
         {
             string status;
@@ -154,6 +193,11 @@ namespace Azure.EhrAssets
         }
 
 
+        /// <summary>
+        /// Takes glucose number and determines whether the range is stable, unstable, or critical
+        /// </summary>
+        /// <param name="glucose"></param>
+        /// <returns>metric status</returns>
         public string checkGlucoseStatus(int glucose)
         {
             string status;
@@ -172,6 +216,12 @@ namespace Azure.EhrAssets
             return status;
         }
 
+        /// <summary>
+        /// Takes BP numbers and determines whether the range is stable, unstable, or critical
+        /// </summary>
+        /// <param name="systolic"></param>
+        /// <param name="diastolic"></param>
+        /// <returns>metric status</returns>
         public string checkBpStatus(int systolic, int diastolic)
         {
             string status;
@@ -192,57 +242,29 @@ namespace Azure.EhrAssets
             return status;
         }
 
-        public Biometric generateBiometric(Patient patient)
+        /// <summary>
+        /// Randomly chooses a diagnosis
+        /// </summary>
+        /// <returns>integer representing diagnosis chosen</returns>
+        public int generateDiagnosis()
         {
-            Biometric newReading = new Biometric();
-            var lastReading = patient.Biometrics.OrderByDescending(x => x.MeasurementDate).First();
-            Tuple<int, int> systolicAndDiastolic = generateBloodPressure(patient.MedicalStatus, lastReading);
-            newReading.Systolic = systolicAndDiastolic.Item1;
-            newReading.Diastolic = systolicAndDiastolic.Item2;
-            newReading.Oxygen = generateOxygen(patient.MedicalStatus, lastReading);
-            newReading.Glucose = generateGlucose(patient.MedicalStatus, lastReading);
-            newReading.MeasurementDate = DateTime.Now;
-            newReading.PatientId = patient.PatientId;
-            return newReading;
+            return r.Next(1, 100);
         }
 
-        public int generateGlucose(string status, Biometric lastReading)
-        {
-            int maxChange = status == "critical" ? 25 : 10;
-            var percentChange = r.Next(-maxChange, maxChange) / 100f;
-            int newGlucose = (int)Math.Round(lastReading.Glucose * percentChange + lastReading.Glucose);
-            return newGlucose;
-        }
-
-        public Tuple<int, int> generateBloodPressure(string status, Biometric lastReading)
-        {
-            int maxChange = status == "critical" ? 20 : 10;
-            var percentChange = r.Next(-maxChange, maxChange) / 100f;
-            int newSystolic = (int)Math.Round(lastReading.Systolic * percentChange + lastReading.Systolic);
-            percentChange = r.Next(0, maxChange) / 100f;
-            int newDiastolic = (int)Math.Round(lastReading.Diastolic * percentChange + lastReading.Diastolic);
-            return new Tuple<int, int>(newSystolic, newDiastolic);
-        }
-
-        public int generateOxygen(string status, Biometric lastReading)
-        {
-            int maxChange = status == "critical" ? 10 : 5;
-            var percentChange = r.Next(-maxChange, maxChange) / 100f;
-            int newOxygen = (int)Math.Round(lastReading.Oxygen * percentChange + lastReading.Oxygen);
-            newOxygen = Math.Min(newOxygen, 100);
-            return newOxygen;
-        }
-
-        public int generateDiagnosis(int age)
-        {
-            return r.Next(1, 20);
-        }
-
+        /// <summary>
+        /// Randomly generates an age
+        /// </summary>
+        /// <returns></returns>
         public int generateAge()
         {
             return r.Next(0, 100);
         }
 
+
+        /// <summary>
+        /// Randomly generates the patient's gender
+        /// </summary>
+        /// <returns></returns>
         public string generateGender()
         {
             int rInt = r.Next(1, 3);
@@ -250,6 +272,12 @@ namespace Azure.EhrAssets
             return gender;
         }
 
+
+        /// <summary>
+        /// Randomly generates a patients name based on gener
+        /// </summary>
+        /// <param name="gender"></param>
+        /// <returns></returns>
         public string generateName(string gender)
         {
             string name="";

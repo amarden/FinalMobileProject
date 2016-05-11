@@ -1,7 +1,4 @@
-﻿using Azure.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,36 +9,30 @@ namespace WebApplication1.Notifications
 {
     public class NotificationsController : ApiController
     {
-        private DataContext db = new DataContext();
-         
         [HttpGet]
-        public async Task<HttpResponseMessage> Post(string pns, [FromBody]string message, string to_tag)
+        public async Task<HttpResponseMessage> Post(string pns)
         {
             var user = HttpContext.Current.User.Identity.Name;
             string[] userTag = new string[2];
-            userTag[0] = "username:" + to_tag;
-            userTag[1] = "from:" + user;
-
+            userTag[0] = "username: device";
+            userTag[1] = "from: azure" ;
+            string message = "programattic sending";
             Microsoft.Azure.NotificationHubs.NotificationOutcome outcome = null;
             HttpStatusCode ret = HttpStatusCode.InternalServerError;
-
             switch (pns.ToLower())
             {
                 case "wns":
                     // Windows 8.1 / Windows Phone 8.1
                     var toast = @"<toast><visual><binding template=""ToastText01""><text id=""1"">" +
-                                "From " + user + ": " + message + "</text></binding></visual></toast>";
-                    outcome = await Notifications.Instance.Hub.SendWindowsNativeNotificationAsync(toast, userTag);
-                    break;
-                case "apns":
-                    // iOS
-                    var alert = "{\"aps\":{\"alert\":\"" + "From " + user + ": " + message + "\"}}";
-                    outcome = await Notifications.Instance.Hub.SendAppleNativeNotificationAsync(alert, userTag);
-                    break;
-                case "gcm":
-                    // Android
-                    var notif = "{ \"data\" : {\"message\":\"" + "From " + user + ": " + message + "\"}}";
-                    outcome = await Notifications.Instance.Hub.SendGcmNativeNotificationAsync(notif, userTag);
+                                 message + "</text></binding></visual></toast>";
+                    try
+                    {
+                        outcome = await Notifications.Instance.Hub.SendWindowsNativeNotificationAsync(toast);
+                    }
+                    catch(Exception e)
+                    {
+                        string error = e.Message;
+                    }
                     break;
             }
 
@@ -55,15 +46,6 @@ namespace WebApplication1.Notifications
             }
 
             return Request.CreateResponse(ret);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Web.ClientObjects;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Popups;
@@ -26,7 +27,10 @@ namespace Client
     /// </summary>
     public sealed partial class NursePage : Page
     {
+        //Represents our connection to our azure api
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
+
+        //our view model for our page
         private User user = new User();
 
         public NursePage()
@@ -34,6 +38,10 @@ namespace Client
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Assigns data passed from previous page to view model and populates the procedure list
+        /// </summary>
+        /// <param name="e"></param>
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             this.user = (User)e.Parameter;
@@ -41,6 +49,9 @@ namespace Client
             getSupportProcedures();
         }
 
+        /// <summary>
+        /// This gets the support procedures that populates the view list
+        /// </summary>
         private async void getSupportProcedures()
         {
             MyProgressBar.IsIndeterminate = true;
@@ -63,6 +74,11 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// This complete's the procedure and requeries the support type procedures 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void completeProcedure(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
@@ -89,6 +105,11 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Navigates to the patients chat page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToChat(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
@@ -101,6 +122,17 @@ namespace Client
             psd.Patient = new PatientDetail();
             psd.Patient.PatientId = Convert.ToInt32(id);
             this.Frame.Navigate(typeof(ChatPage), psd);
+        }
+
+        /// <summary>
+        /// log out and go back to landing page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void logout(object sender, TappedRoutedEventArgs e)
+        {
+            await MobileServiceDotNet.LogoutAsync();
+            this.Frame.Navigate(typeof(MainPage));
         }
     }
 }

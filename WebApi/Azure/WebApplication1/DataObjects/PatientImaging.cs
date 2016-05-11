@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Azure.DataObjects
 {
+    /// <summary>
+    /// Represents PatientImaging table in SQL
+    /// </summary>
     public class PatientImaging
     {
         [Key]

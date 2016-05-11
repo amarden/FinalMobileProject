@@ -111,14 +111,15 @@
     <Compile Include="ClientObjects\PatientProcedure.cs" />
     <Compile Include="ClientObjects\PatientProvider.cs" />
     <Compile Include="ClientObjects\PatientScreenData.cs" />
-    <Compile Include="ClientObjects\PatientToDo.cs" />
+    <Compile Include="ClientObjects\PatientSearchModel.cs" />
     <Compile Include="ClientObjects\ProcedureCode.cs" />
     <Compile Include="ClientObjects\SubmitImage.cs" />
-    <Compile Include="ClientObjects\ToDoItem.cs" />
     <Compile Include="ClientObjects\User.cs" />
     <Compile Include="ClientObjects\ViewChatLog.cs" />
     <Compile Include="ClientObjects\ViewImage.cs" />
     <Compile Include="ClientObjects\PatientDetail.cs" />
+    <Compile Include="ClientObjects\ViewPatient.cs" />
+    <Compile Include="ClientObjects\ViewPatientDetail.cs" />
     <Compile Include="ClientObjects\ViewPatientProcedure.cs" />
     <Compile Include="ClientObjects\ViewPatientProvider.cs" />
     <Compile Include="ClientObjects\ViewProvider.cs" />
@@ -128,6 +129,9 @@
     <Compile Include="Converters\CustomProcedureConverter.cs" />
     <Compile Include="Converters\CustomIsNurseConverter.cs" />
     <Compile Include="Converters\CustomProviderConverter.cs" />
+    <Compile Include="PatientSearch.xaml.cs">
+      <DependentUpon>PatientSearch.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
@@ -183,6 +187,10 @@
     <Page Include="ChatPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PatientSearch.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="HomePage.xaml">
       <SubType>Designer</SubType>

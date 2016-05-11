@@ -10,6 +10,9 @@ using Windows.UI.Xaml.Data;
 
 namespace Client
 {
+    /// <summary>
+    /// Used to hide/show the discharge button on the Patient detail page
+    /// </summary>
     public class CustomIsDischargeConverter : IValueConverter
     {
         public CustomIsDischargeConverter()

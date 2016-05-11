@@ -1,23 +1,50 @@
-﻿using System;
+﻿using Microsoft.Azure.WebJobs;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs;
 using WebJob1.EHRASsets;
+using WebJob1.NotificationClass;
+using static WebJob1.EHRASsets.EHR;
 
-namespace WebJob2
+namespace WebJob1
 {
     public class Functions
     {
-        // This function will get triggered/executed when a new message is written 
-        // on an Azure Queue called queue.
-        public static void ProcessQueueMessage()
+        // This will be triggerd on demand
+        [NoAutomaticTrigger]
+        public async static void ManualTrigger()
         {
+            //Update Biometrics
             var ehr = new EHR();
             ehr.PatientBiometricScan();
-            Console.WriteLine("There were " + ehr.getPatientChangeNumber() + " patients changes");
+
+            //Send Notification
+            string message = generateNotificationMessage(ehr.changes);
+            Console.WriteLine("Message that was sent: " + message);
+            // Windows 8.1 / Windows Phone 8.1
+            var toast = @"<toast><visual><binding template=""ToastText01""><text id=""1"">" +
+                            message + "</text></binding></visual></toast>";
+            try
+            {
+                await Notifications.Instance.Hub.SendWindowsNativeNotificationAsync(toast);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error in sending Notification message: " + e.Message);
+            }
+            Console.WriteLine("Triggered Notification");
+        }
+
+        /// <summary>
+        /// Generates the notification message
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        private static string generateNotificationMessage(List<PatientStatusChange> info)
+        {
+            int changes = info.Count();
+
+            return changes + " patient(s) have new medical statuses";
         }
     }
 }

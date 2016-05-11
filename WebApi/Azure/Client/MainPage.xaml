@@ -23,6 +23,5 @@
             </Button.Flyout>
         </Button>
         <Button Width="200" Height="100" Content="Login" Tapped="login" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <Button Content="test" VerticalAlignment="Bottom" Tapped="temp" />
     </Grid>
 </Page>

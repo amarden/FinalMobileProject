@@ -22,11 +22,14 @@ using Windows.UI.Xaml.Navigation;
 namespace Client
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Patient's home page, contains all the links to other Patient data and all the meta data on the Patient
     /// </summary>
     public sealed partial class PatientPage : Page
     {
+        //Represents our connection to our azure api
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
+
+        //our view model for our page
         private PatientScreenData screenData = new PatientScreenData();
 
         public PatientPage()
@@ -34,12 +37,40 @@ namespace Client
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Assigns data passed from previous page to view model and populates the procedure list
+        /// </summary>
+        /// <param name="e"></param>
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             this.screenData = (PatientScreenData)e.Parameter;
             getPatient(screenData.Patient.PatientId);
         }
 
+        /// <summary>
+        /// business logic that determines whether to show hide the discharge button and the discharge data
+        /// </summary>
+        private void hideShowDischargeOrDead()
+        {
+            var patient = this.screenData.Patient;
+            var user = this.screenData.User;
+            if ((patient.MedicalStatus == "dead" || patient.MedicalStatus == "discharged"))
+            {
+                DischargeBtn.Visibility = Visibility.Collapsed;
+                ProviderNum.Visibility = Visibility.Collapsed;
+                ChatNum.Visibility = Visibility.Collapsed;
+                ImageNum.Visibility = Visibility.Collapsed;
+                ProcedureNum.Visibility = Visibility.Collapsed;
+                ProcedureNumText.Visibility = Visibility.Collapsed;
+                ImageNumText.Visibility = Visibility.Collapsed;
+                ChatNumText.Visibility = Visibility.Collapsed;
+                ProviderNumText.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
+        /// business logic that determines whether to show hide the discharge button and the discharge data
+        /// </summary>
         private void hideShowDischargeBtn()
         {
             var patient = this.screenData.Patient;
@@ -58,6 +89,10 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Gets all the patient level information and attaches it to the view model.
+        /// </summary>
+        /// <param name="patientId"></param>
         private async void getPatient(int patientId)
         {
             MyProgressBar.IsIndeterminate = true;
@@ -86,26 +121,51 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Navigates to the provider page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToProviders(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(ProviderPage), this.screenData);
         }
 
+        /// <summary>
+        /// Navigates to the procedure page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToProcedure(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(ProcedurePage), this.screenData);
         }
 
+        /// <summary>
+        /// Navigates to the patients image page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToImage(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(ImagingPage), this.screenData);
         }
 
+        /// <summary>
+        /// Navigates to the patients chat page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToChat(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(ChatPage), this.screenData);
         }
 
+        /// <summary>
+        /// Discharges the patient, can only be done by physician
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void discharge(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
@@ -115,6 +175,7 @@ namespace Client
                 await MobileServiceDotNet.InvokeApiAsync("Patient", HttpMethod.Put, parameters);
                 getPatient(this.screenData.Patient.PatientId);
                 hideShowDischargeBtn();
+                hideShowDischargeOrDead();
             }
             catch
             {
@@ -129,6 +190,11 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Navigates back to list of patients assigned to user
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backToPatients(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(HomePage), this.screenData.User);

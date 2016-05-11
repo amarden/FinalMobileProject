@@ -25,11 +25,14 @@ using Windows.UI.Xaml.Navigation;
 namespace Client
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Page that is used to view a patient image
     /// </summary>
     public sealed partial class ViewImage : Page
     {
+        //Represents our connection to our azure api
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
+
+        //our view model for our page
         ImageNavScreenData screenData;
 
         public ViewImage()
@@ -37,6 +40,10 @@ namespace Client
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Assigns data passed from previous page to view model and grabs the image data
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.screenData = (ImageNavScreenData)e.Parameter;
@@ -44,13 +51,18 @@ namespace Client
             showImage(this.screenData.BlobId);
         }
 
+        /// <summary>
+        /// query to get the image data
+        /// </summary>
+        /// <param name="id"></param>
         private async void showImage(string id)
         {
             MyProgressBar.IsIndeterminate = true;
             try
             {
-                Dictionary<string, string> parameters = new Dictionary<string, string> { ["blobId"] = id };
+                Dictionary<string, string> parameters = new Dictionary<string, string> { ["blobId"] = id, ["patientId"] = this.screenData.screenData.Patient.PatientId.ToString() };
                 byte[] imageData = await MobileServiceDotNet.InvokeApiAsync<byte[]>("patientImaging", HttpMethod.Get, parameters);
+                //convert byte data in filestream
                 using (InMemoryRandomAccessStream ms = new InMemoryRandomAccessStream())
                 {
                     using (DataWriter writer = new DataWriter(ms.GetOutputStreamAt(0)))
@@ -77,11 +89,11 @@ namespace Client
             }
         }
 
-        private void temp(object sender, TappedRoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(MainPage));
-        }
-
+        /// <summary>
+        /// Go back to patient image pages
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToImages(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(ImagingPage), this.screenData.screenData);

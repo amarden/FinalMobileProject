@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Azure.Models
 {
+    /// <summary>
+    /// our Database connection to Azure SQL
+    /// </summary>
     public class DataContext : DbContext
     {
 
@@ -18,6 +21,7 @@ namespace Azure.Models
         {
         }
 
+        //Our tables in our database
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Provider> Providers { get; set; }
         public DbSet<DiagnosisCode> DiagnosisCodes { get; set; }
@@ -28,7 +32,7 @@ namespace Azure.Models
         public DbSet<PatientProcedure> PatientProcedures { get; set; }
         public DbSet<PatientProvider> PatientProviders{ get; set; }
 
-
+        //Represents the relationships our tables have to each other
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Patient>()

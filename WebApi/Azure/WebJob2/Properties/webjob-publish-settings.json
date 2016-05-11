@@ -1,9 +1,9 @@
 ﻿{
   "$schema": "http://schemastore.org/schemas/json/webjob-publish-settings.json",
   "webJobName": "WebJob2",
-  "startTime": "2016-04-30T15:00:00-05:00",
+  "startTime": null,
   "endTime": null,
-  "jobRecurrenceFrequency": "Minute",
-  "interval": 1,
-  "runMode": "Scheduled"
+  "jobRecurrenceFrequency": null,
+  "interval": null,
+  "runMode": "OnDemand"
 }

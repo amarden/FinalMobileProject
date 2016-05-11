@@ -1,5 +1,8 @@
-﻿namespace Client.ClientObjects
+﻿namespace Web.ClientObjects
 {
+    /// <summary>
+    /// Class that represents the assignment of a provider to a patient used on the client application on the ProviderPage
+    /// </summary>
     public class ViewPatientProvider
     {
         public int ProviderPatientId { get; set; }

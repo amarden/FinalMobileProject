@@ -14,5 +14,6 @@
             <TextBox Width="100" HorizontalAlignment="Center" x:Name="numberOfPatients"></TextBox>
             <Button HorizontalAlignment="Center" Tapped="createPatients" Content="Create" />
         </StackPanel>
+        <Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="Log Off" Tapped="logout" />
     </Grid>
 </Page>

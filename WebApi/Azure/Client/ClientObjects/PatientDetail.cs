@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Client.ClientObjects
 {
+    /// <summary>
+    /// Class that represents detail information the patient, used in client application in the Patient Detail page
+    /// </summary>
     public class PatientDetail
     {
         public int PatientId { get; set; }

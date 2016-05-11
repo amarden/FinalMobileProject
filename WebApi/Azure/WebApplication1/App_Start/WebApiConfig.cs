@@ -29,6 +29,7 @@ namespace Azure
                 defaults: new { id = RouteParameter.Optional }
             );
 
+            //Default return of json instead of xml
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
         }
     }

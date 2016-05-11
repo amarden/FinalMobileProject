@@ -7,6 +7,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Azure.DataObjects
 {
+    /// <summary>
+    /// Represents DiagnosisCode table in SQL
+    /// </summary>
     public class DiagnosisCode
     {
         public DiagnosisCode()

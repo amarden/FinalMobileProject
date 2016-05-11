@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Web.ClientObjects;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Popups;
@@ -23,11 +24,14 @@ using Windows.UI.Xaml.Navigation;
 namespace Client
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Procedure list page for a patient
     /// </summary>
     public sealed partial class ProcedurePage : Page
     {
+        //our view model for our page
         private PatientScreenData screenData = new PatientScreenData();
+        
+        //Represents our connection to our azure api
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
 
         public ProcedurePage()
@@ -35,30 +39,76 @@ namespace Client
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Assigns data passed from previous page to view model and populates the procedure list
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.screenData = (PatientScreenData)e.Parameter;
             this.DataContext = this.screenData;
             populateProcedureList();
-            populatePatientProcedures(false);
+            populatePatientProcedures();
         }
 
+        /// <summary>
+        /// populates list of procedures that are possible to assign to a patient
+        /// </summary>
         private async void populateProcedureList()
         {
-            MasterList.ItemsSource = await MobileServiceDotNet.InvokeApiAsync<List<ProcedureCode>>("procedurecode", HttpMethod.Get, null);
+            MyProgressBar.IsIndeterminate = true;
+            try
+            {
+                MasterList.ItemsSource = await MobileServiceDotNet.InvokeApiAsync<List<ProcedureCode>>("procedurecode", HttpMethod.Get, null);
+            }
+            catch
+            {
+                var message = "There was an error while trying to get providers";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
+            }
+            finally
+            {
+                MyProgressBar.IsIndeterminate = false;
+            }
         }
 
-        private async void populatePatientProcedures(bool requery)
+        /// <summary>
+        /// Populate procedures assigned to this patient
+        /// </summary>
+        private async void populatePatientProcedures()
         {
-            Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
-            List<ViewPatientProcedure> patientProcedures = await MobileServiceDotNet.InvokeApiAsync<List<ViewPatientProcedure>>("procedurecode", HttpMethod.Get, parameters);
-            patientProcedures.ForEach(x => x.ShowRules.userRole = this.screenData.User.Role);
-            ProcedureList.ItemsSource = patientProcedures;
+            MyProgressBar.IsIndeterminate = true;
+            try
+            {
+                Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
+                List<ViewPatientProcedure> patientProcedures = await MobileServiceDotNet.InvokeApiAsync<List<ViewPatientProcedure>>("procedurecode", HttpMethod.Get, parameters);
+                patientProcedures.ForEach(x => x.ShowRules.userRole = this.screenData.User.Role);
+                ProcedureList.ItemsSource = patientProcedures;
+            }
+            catch
+            {
+                var message = "There was an error while trying to get providers";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
+            }
+            finally
+            {
+                MyProgressBar.IsIndeterminate = false;
+            }
         }
 
+        /// <summary>
+        /// adds a procedure to the patient 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void addProcedure(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
+            //get the id of the procedure
             var button = (Button)sender;
             var grid = (Grid)button.Parent;
             var idElement = (TextBlock)grid.Children.First();
@@ -68,7 +118,7 @@ namespace Client
             {
                 var data = JToken.FromObject(assignment);
                 await MobileServiceDotNet.InvokeApiAsync("procedurecode", data);
-                populatePatientProcedures(true);
+                populatePatientProcedures();
             }
             catch
             {
@@ -83,6 +133,11 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// takes the id of the procedure and then creates a PatientProcedure object
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private PatientProcedure createAssignment(string id)
         {
             PatientProcedure pp = new PatientProcedure();
@@ -94,21 +149,21 @@ namespace Client
             return pp;
         }
 
+        /// <summary>
+        /// Go back to patient page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToPatient(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(PatientPage), this.screenData);
         }
 
-        private void navToChat(object sender, TappedRoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(ChatPage), this.screenData);
-        }
-
-        private void navToProvider(object sender, TappedRoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(ProviderPage), this.screenData);
-        }
-
+        /// <summary>
+        /// Completes a procedure assigned to the patient
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void completeProcedure(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
@@ -120,7 +175,7 @@ namespace Client
             {
                 Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientProcedureId"] = id.ToString() };
                 await MobileServiceDotNet.InvokeApiAsync("procedurecode", HttpMethod.Put, parameters);
-                populatePatientProcedures(true);
+                populatePatientProcedures();
             }
             catch
             {

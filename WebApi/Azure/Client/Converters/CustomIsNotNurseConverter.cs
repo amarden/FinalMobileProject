@@ -8,6 +8,9 @@ using Windows.UI.Xaml.Data;
 
 namespace Client
 {
+    /// <summary>
+    /// Used to hide/show information based on if user role is not a Nurse
+    /// </summary>
     public class CustomIsNotNurseConverter : IValueConverter
     {
         public CustomIsNotNurseConverter()

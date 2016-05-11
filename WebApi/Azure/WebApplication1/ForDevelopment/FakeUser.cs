@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Azure.Temporary
 {
+    /// <summary>
+    /// Used to select a user in provider to help test functionality
+    /// </summary>
     public static class FakeUser
     {
         public static User getUser()
@@ -21,7 +24,7 @@ namespace Azure.Temporary
                     Name = x.Name,
                     Role = x.Role
                 }).ToList();
-                return prov[0];
+                return prov[5];
             }
         }
     }

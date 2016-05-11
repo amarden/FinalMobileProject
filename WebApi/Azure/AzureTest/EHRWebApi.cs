@@ -5,6 +5,9 @@ using Azure.DataObjects;
 
 namespace AzureTest
 {
+    /// <summary>
+    /// Class used for tests on the EHR service
+    /// </summary>
     [TestClass]
     public class EHRWebApi
     {

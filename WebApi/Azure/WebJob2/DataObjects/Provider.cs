@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Azure.DataObjects
 {
+    /// <summary>
+    /// Represents Provider table in SQL
+    /// </summary>
     public class Provider
     {
         public Provider()

@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Client.ClientObjects
 {
+    /// <summary>
+    /// Class which represents the Biometric table in SQL
+    /// </summary>
     public class Biometric
     {
         public int BiometricId { get; set; }

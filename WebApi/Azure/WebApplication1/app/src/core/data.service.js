@@ -1,3 +1,4 @@
+//Data Service that makes the api call to our server to get dashboard data
 angular.module("ehrDashboard")
     .service("Data", function($http){
         this.getData = function () {

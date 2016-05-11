@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Client.ClientObjects
 {
+    /// <summary>
+    /// Represents Patient data that is shown as a list to assigned providers
+    /// </summary>
     public class Patient
     {
         public int PatientId { get; set; }

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Web.ClientObjects;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Popups;
@@ -23,12 +24,16 @@ using Windows.UI.Xaml.Navigation;
 namespace Client
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Home landing page of app where someone can register or user can login
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        //Represents our connection to our azure api
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
 
+        /// <summary>
+        /// class used to post for user registration to carry what role the user wants to be
+        /// </summary>
         public class ProviderType
         {
             public string role { get; set; }
@@ -39,6 +44,11 @@ namespace Client
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Logs the user in using twitter, on successful login will navigate to the page associated with the user's role
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void login(object sender, TappedRoutedEventArgs e)
         {
             try
@@ -76,9 +86,15 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Registers the user 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void register(object sender, TappedRoutedEventArgs e)
         {
             var btn = (Button)sender;
+            //get role and create providertype object
             var role = btn.Content;
             ProviderType pt = new ProviderType();
             pt.role = role.ToString();
@@ -95,11 +111,6 @@ namespace Client
                 dialog.Commands.Add(new UICommand("OK"));
                 await dialog.ShowAsync();
             }
-        }
-
-        private void temp(object sender, TappedRoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(ViewImage));
         }
     }
 }

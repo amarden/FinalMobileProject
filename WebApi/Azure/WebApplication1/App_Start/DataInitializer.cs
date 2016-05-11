@@ -1,23 +1,28 @@
 ﻿using Azure.DataObjects;
 using Azure.Models;
-using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace Azure.App_Start
 {
+    /// <summary>
+    /// Class that is invoked at appstart and run when the database model has changed compared to the code first implementation of the database
+    /// </summary>
     public class DataInitializer : DropCreateDatabaseIfModelChanges<DataContext>
     {
+        /// <summary>
+        /// Main method called when this class is invoked, takes our DbContext class. The class does 4 things: first three are populate the database with diagnoses, procedures, and providers
+        /// The second is to create a view in order to be used by Azure Search
+        /// </summary>
+        /// <param name="context"></param>
         protected override void Seed(DataContext context)
         {
             List<DiagnosisCode> diagnoses = getDiagnoses();
             List<ProcedureCode> procedures = getProcedures();
             List<Provider> providers = getProviders();
+            createSearchView();
             using (var db = new DataContext())
             {
                 db.DiagnosisCodes.AddRange(diagnoses);
@@ -29,6 +34,10 @@ namespace Azure.App_Start
             base.Seed(context);
         }
 
+        /// <summary>
+        /// Creates provider from data based on our comma seperated text file in StartingData Folder called ProviderStartList.txt
+        /// </summary>
+        /// <returns>List of Providers to populate our providers table</returns>
         public List<Provider> getProviders()
         {
             var providers = new List<Provider>();
@@ -48,6 +57,10 @@ namespace Azure.App_Start
             return providers;
         }
 
+        /// <summary>
+        /// Creates diagnoses from data based on our comma seperated text file in StartingData Folder called DiagnosisCode.txt
+        /// </summary>
+        /// <returns>List of DiagnoseCodes to populate our diagnosis table</returns>
         public List<DiagnosisCode> getDiagnoses()
         {
             var codes = new List<DiagnosisCode>();
@@ -65,6 +78,10 @@ namespace Azure.App_Start
             return codes;
         }
 
+        /// <summary>
+        /// Creates procedures from data based on our comma seperated text file in StartingData Folder called ProcedureCodes.txt
+        /// </summary>
+        /// <returns>List of Procedures to populate our ProcedureCode table</returns>
         public List<ProcedureCode> getProcedures()
         {
             var codes = new List<ProcedureCode>();
@@ -80,9 +97,27 @@ namespace Azure.App_Start
                     code.Role = items[1];
                     codes.Add(code);
                 }
-                // Read the stream to a string, and write the string to the console.
             }
             return codes;
+        }
+
+        /// <summary>
+        /// Executes SQL code that creates a view in our database which is used by Azure search
+        /// </summary>
+        private void createSearchView()
+        {
+            string viewCreator = "CREATE VIEW [dbo].[SearchView] " +
+                        "AS " +
+                        "SELECT row_number() OVER(ORDER BY Name) as id, dbo.Patients.Name, dbo.Patients.Age, dbo.Patients.Gender, dbo.Patients.MedicalStatus, dbo.PatientProviders.ProviderId, dbo.DiagnosisCodes.Diagnosis " +
+                        "FROM dbo.Patients INNER JOIN " +
+             " dbo.PatientProviders ON dbo.Patients.PatientId = dbo.PatientProviders.PatientId INNER JOIN " +
+             " dbo.DiagnosisCodes ON dbo.Patients.DiagnosisCodeId = dbo.DiagnosisCodes.DiagnosisCodeId";
+
+
+            using (var db = new DataContext())
+            {
+                db.Database.ExecuteSqlCommand(viewCreator);
+            }
         }
     }
 }

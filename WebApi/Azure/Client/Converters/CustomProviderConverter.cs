@@ -7,6 +7,9 @@ using Windows.UI.Xaml;
 
 namespace Client
 {
+    /// <summary>
+    /// Used to hide/show information based on user role
+    /// </summary>
     public class CustomProviderConverter
     {
         public CustomProviderConverter()

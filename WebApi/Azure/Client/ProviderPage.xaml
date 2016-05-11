@@ -12,22 +12,26 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="10*"></RowDefinition>
             <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" DataContext="{Binding User}">
-            <TextBlock Text="Provider List" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="20 0 0 0"></TextBlock>
-            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20 0 0 0"></TextBlock>
-            <TextBlock Text="{Binding Role}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 20 0"></TextBlock>
+        <Grid Grid.Row="0"  Background="LightBlue">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" DataContext="{Binding User}">
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Text="{Binding Role}" VerticalAlignment="Bottom" HorizontalAlignment="Center"></TextBlock>
+            </Grid>
+            <Grid Grid.Column="1" DataContext="{Binding Patient}">
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Text="{Binding MedicalStatus}" VerticalAlignment="Bottom" HorizontalAlignment="Center"></TextBlock>
+            </Grid>
             <ProgressBar Name="MyProgressBar" IsIndeterminate="False" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="Transparent"></ProgressBar>
         </Grid>
-        <Grid Grid.Row="1" DataContext="{Binding Patient}">
-            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20 0 0 0"></TextBlock>
-            <TextBlock Text="{Binding MedicalStatus}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="20 0 0 0"></TextBlock>
-        </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <Grid HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="{Binding ActualWidth, ElementName=ProviderList}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -37,7 +41,6 @@
                 <TextBlock Margin="20,0,0,0" Grid.Column="1" Text="Type" TextWrapping="Wrap" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
             </Grid>
             <ListView Grid.Column="1" Name="ProviderList" ScrollViewer.VerticalScrollMode="Auto" Margin="0 50 0 0">
-            
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid HorizontalAlignment="Center" Height="100" Width="{Binding ActualWidth, ElementName=ProviderList}">
@@ -61,7 +64,7 @@
                 </ListView.ItemContainerStyle>
             </ListView>
         </Grid>
-        <Grid Grid.Row="3" DataContext="{Binding User}">
+        <Grid Grid.Row="2" DataContext="{Binding User}">
             <Button Content="Add Provider" Visibility="{Binding Role, Converter={StaticResource CustomProviderConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Button.Flyout>
                     <Flyout Placement="Bottom">
@@ -88,7 +91,7 @@
                 </Button.Flyout>
             </Button>
         </Grid>
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>

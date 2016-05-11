@@ -14,10 +14,19 @@
             <RowDefinition Height="3*"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" DataContext="{Binding User}" Background="LightBlue">
-            <TextBlock Text="Image List" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="20 0 0 0"></TextBlock>
-            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20 0 0 0"></TextBlock>
-            <TextBlock Text="{Binding Role}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 20 0"></TextBlock>
+        <Grid Grid.Row="0"  Background="LightBlue">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" DataContext="{Binding User}">
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Text="{Binding Role}" VerticalAlignment="Bottom" HorizontalAlignment="Center"></TextBlock>
+            </Grid>
+            <Grid Grid.Column="1" DataContext="{Binding Patient}">
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Text="{Binding MedicalStatus}" VerticalAlignment="Bottom" HorizontalAlignment="Center"></TextBlock>
+            </Grid>
             <ProgressBar Name="MyProgressBar" IsIndeterminate="False" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="Transparent"></ProgressBar>
         </Grid>
         <Grid Grid.Row="1">

@@ -1,3 +1,4 @@
+//Bootstraps our angular app
 angular.module('ehrDashboard', [
     'ngAnimate',
     'ngAria',
@@ -9,13 +10,3 @@ angular.module('ehrDashboard', [
       .primaryPalette('blue')
       .accentPalette('green');
 })
-//.config(function ($stateProvider) {
-//    $stateProvider
-//        .state('home',
-//        {
-//            url: "/",
-//            templateUrl: "core/home.html",
-//            controller: "HomeCtrl",
-//            controllerAs: "mc"
-//        });
-//});

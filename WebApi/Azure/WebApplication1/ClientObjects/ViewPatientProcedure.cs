@@ -5,6 +5,9 @@ using System.Web;
 
 namespace Azure.ClientObjects
 {
+    /// <summary>
+    /// Class that represents a single procedure that is assigned to a patient, used in ProcedurePage on client application
+    /// </summary>
     public class ViewPatientProcedure
     {
 
@@ -22,6 +25,9 @@ namespace Azure.ClientObjects
         public VisibilityRules ShowRules { get; set; }
     }
 
+    /// <summary>
+    /// Class used in ViewPatientProcedure that is used to determine when the procedure can be interacted with and by whom.
+    /// </summary>
     public class VisibilityRules
     {
         public bool Completed { get; set; }

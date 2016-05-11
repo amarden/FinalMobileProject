@@ -17,8 +17,8 @@
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20 0 0 0"></TextBlock>
-            <TextBlock Grid.Column="0" Text="{Binding Role}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0 0 20 0"></TextBlock>
+            <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="20 0 0 0"></TextBlock>
+            <TextBlock Grid.Column="0" Text="{Binding Role}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 20 0"></TextBlock>
             <Button Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Content="Back To Patient List" Tapped="backToPatients"></Button>
         </Grid>
         <Grid Grid.Row="1">
@@ -51,10 +51,10 @@
                     <TextBlock Grid.Row="3" Text="Admission Date: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
                     <TextBlock Grid.Row="4" Text="Diagnosis: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
                     <TextBlock Grid.Row="5" Text="Status: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
-                    <TextBlock Grid.Row="6" Text="Providers: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
-                    <TextBlock Grid.Row="7" Text="Procedures: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
-                    <TextBlock Grid.Row="8" Text="Chat Activity: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
-                    <TextBlock Grid.Row="9" Text="Images: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock  Name="ProviderNumText" Grid.Row="6" Text="Providers: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock  Name="ProcedureNumText" Grid.Row="7" Text="Procedures: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock  Name="ChatNumText" Grid.Row="8" Text="Chat Activity: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock  Name="ImageNumText" Grid.Row="9" Text="Images: " VerticalAlignment="Center" Foreground="Gray" HorizontalAlignment="Right" Margin="5 0 0 0"></TextBlock>
                     <Button Grid.Row="10"
                             Name="DischargeBtn" Visibility="Collapsed"
                             Tapped="discharge">Discharge Patient</Button>
@@ -79,22 +79,22 @@
                     <TextBlock Grid.Row="3" Text="{Binding AdmitDate}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0"></TextBlock>
                     <TextBlock Grid.Row="4" Text="{Binding Diagnosis}"  TextWrapping="WrapWholeWords" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0"></TextBlock>
                     <TextBlock Grid.Row="5" Text="{Binding MedicalStatus}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0"></TextBlock>
-                    <TextBlock Grid.Row="6" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0" Tapped="navToProviders">
+                    <TextBlock Name="ProviderNum" Grid.Row="6" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0" Tapped="navToProviders">
                         <Underline>
                             <Run Text="{Binding ProviderNumber}"></Run>
                         </Underline>
                     </TextBlock>
-                    <TextBlock Grid.Row="7" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0" Tapped="navToProcedure">
+                    <TextBlock Name="ProcedureNum" Grid.Row="7" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0" Tapped="navToProcedure">
                         <Underline>
                             <Run Text="{Binding ProcedureNumber}"></Run>
                         </Underline>
                     </TextBlock>
-                    <TextBlock Grid.Row="8" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0" Tapped="navToChat">
+                    <TextBlock Name="ChatNum" Grid.Row="8" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0" Tapped="navToChat">
                         <Underline>
                             <Run Text="{Binding ChatActivityNumber}"></Run>
                         </Underline>
                     </TextBlock>
-                    <TextBlock Grid.Row="9" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0"  Tapped="navToImage">
+                    <TextBlock Name="ImageNum" Grid.Row="9" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5 0 0 0"  Tapped="navToImage">
                         <Underline>
                             <Run Text="{Binding ImageNumber}"></Run>
                         </Underline>

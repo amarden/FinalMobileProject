@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Azure.ClientObjects
 {
+    /// <summary>
+    /// Class used to represent information being submitted by a POST call to create an image
+    /// </summary>
     public class SubmitImage
     {
         public int PatientId { get; set; }

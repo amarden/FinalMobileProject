@@ -1,4 +1,5 @@
-﻿using Client.ClientObjects;
+﻿using Azure.ClientObjects;
+using Client.ClientObjects;
 using Microsoft.WindowsAzure.MobileServices;
 using Newtonsoft.Json.Linq;
 using System;
@@ -23,11 +24,14 @@ using Windows.UI.Xaml.Navigation;
 namespace Client
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Represents the page where chat messages can be seen and a new chat can be submitted by the user
     /// </summary>
     public sealed partial class ChatPage : Page
     {
+        //our view model for our page
         private PatientScreenData screenData = new PatientScreenData();
+     
+        //Represents our connection to our azure api
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
 
         public ChatPage()
@@ -35,6 +39,10 @@ namespace Client
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Assigns data passed from previous page to view model and populates the chat window
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.screenData = (PatientScreenData)e.Parameter;
@@ -42,13 +50,36 @@ namespace Client
             populateChat();
         }
 
+        /// <summary>
+        /// queries our api to get chat messages for the given patient
+        /// </summary>
         private async void populateChat()
         {
-            Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
-            var chatLogs = await MobileServiceDotNet.InvokeApiAsync<List<ViewChatLog>>("chat", HttpMethod.Get, parameters);
-            ChatLogList.ItemsSource = chatLogs;
+            MyProgressBar.IsIndeterminate = true;
+            try
+            {
+                Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
+                var chatLogs = await MobileServiceDotNet.InvokeApiAsync<List<ViewChatLog>>("chat", HttpMethod.Get, parameters);
+                ChatLogList.ItemsSource = chatLogs;
+            }
+            catch
+            {
+                var message = "There was an error retrieving your images";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
+            }
+            finally
+            {
+                MyProgressBar.IsIndeterminate = false;
+            }
         }
 
+        /// <summary>
+        /// Adds a message for our patient
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void addMessage(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
@@ -75,6 +106,11 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// This takes the string message and then returns a chat object used to post to the api
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         private PatientChatLog createMessage(string message)
         {
             PatientChatLog chat = new PatientChatLog();
@@ -85,16 +121,21 @@ namespace Client
             return chat;
         }
 
-        private void navToProviders(object sender, TappedRoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(ProviderPage), this.screenData);
-        }
-
+        /// <summary>
+        /// Navigates to Patient Detail Page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToPatient(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(PatientPage), this.screenData);
         }
 
+        /// <summary>
+        /// Navigates to Nurse Page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToNursePage(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(NursePage), this.screenData.User);

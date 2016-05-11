@@ -1,4 +1,5 @@
-﻿angular.module("ehrDashboard")
+﻿//Angular Service used to calculate all of the information we show on the dashboard
+angular.module("ehrDashboard")
     .service("Calculate", function () {
         this.getMetrics = function (patient, provider) {
             var metric = {};
@@ -25,12 +26,12 @@
             var groupDiag = _.groupBy(patient, "diagnosis");
             metric.topDiagnoses = _.map(groupDiag, function (data, key) {
                 return {
-                    group: key,
+                    group:  key.length > 32 ? key.substring(0,32)+"..." : key,
                     number: data.length
                 };
             });
 
-            var procDiag = _.groupBy(_.flatten(patient.map(function (d) { return d.procedures.map(function (x) { return x.ProcedureCode.Procedure; }) })));
+            var procDiag = _.groupBy(_.flatten(patient.map(function (d) { return d.procedures; })));
             metric.topProcedures = _.map(procDiag, function (data, key) {
                 return {
                     group: key,
@@ -41,7 +42,7 @@
             var roleGroup = _.groupBy(provider.map(function (d) { return d.Role; }));
             metric.roleCount = _.map(roleGroup, function (data, key) {
                 return {
-                    group: key,
+                    group: key.length > 32 ? key.substring(0,32)+"..." : key,
                     number: data.length
                 };
             });

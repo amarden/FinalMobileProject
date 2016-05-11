@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Azure.ClientObjects
 {
+    /// <summary>
+    /// Class that represents detail information the patient, used in client application in the Patient Detail page
+    /// </summary>
     public class ViewPatientDetail
     {
         public int PatientId { get; set; }

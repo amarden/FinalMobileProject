@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Web.ClientObjects;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Popups;
@@ -18,17 +19,20 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace Client
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Represents the list of providers assigned to the patient
     /// </summary>
     public sealed partial class ProviderPage : Page
     {
+        //our view model for our page
         private PatientScreenData screenData = new PatientScreenData();
+
+        //Represents our connection to our azure api
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
+
+        //Our list of providers
         private List<ViewPatientProvider> providers;
 
         public ProviderPage()
@@ -36,39 +40,84 @@ namespace Client
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Assigns data passed from previous page to view model and populates the image list
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.screenData = (PatientScreenData)e.Parameter;
             this.DataContext = this.screenData;
             populateProviderList();
-            populatePatientProvider(true);
+            populatePatientProvider();
         }
 
+        /// <summary>
+        /// Gets list of all possible providers
+        /// </summary>
         private async void populateProviderList()
         {
-            MasterList.ItemsSource = await MobileServiceDotNet.InvokeApiAsync<List<ViewProvider>>("provider", HttpMethod.Get, null);
+            MyProgressBar.IsIndeterminate = true;
+            try
+            {
+                MasterList.ItemsSource = await MobileServiceDotNet.InvokeApiAsync<List<ViewProvider>>("provider", HttpMethod.Get, null);
+            }
+            catch
+            {
+                var message = "There was an error while trying to get list of providers";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
+            }
+            finally
+            {
+                MyProgressBar.IsIndeterminate = false;
+            }
         }
 
-        private async void populatePatientProvider(bool requery)
+        /// <summary>
+        /// Gets list of all providers for the patient
+        /// </summary>
+        private async void populatePatientProvider()
         {
-            Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
-            this.providers = await MobileServiceDotNet.InvokeApiAsync<List<ViewPatientProvider>>("assignment", HttpMethod.Get, parameters);
-            ProviderList.ItemsSource = providers;
+            MyProgressBar.IsIndeterminate = true;
+            try
+            {
+                Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
+                this.providers = await MobileServiceDotNet.InvokeApiAsync<List<ViewPatientProvider>>("assignment", HttpMethod.Get, parameters);
+                ProviderList.ItemsSource = providers;
+            }
+            catch
+            {
+                var message = "There was an error while trying to get provider list for patient";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
+            }
+            finally
+            {
+                MyProgressBar.IsIndeterminate = false;
+            }
         }
 
+        /// <summary>
+        /// Remove an assigned provider from the patient
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void deleteProvider(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
+            //Get id of the patient provider assignment
             var button = (Button)sender;
             var grid = (Grid)button.Parent;
             var idElement = (TextBlock)grid.Children.First();
             var id = idElement.Text;
             try
             {
-       
                 Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientProviderId"] = id };
                 await MobileServiceDotNet.InvokeApiAsync("assignment", HttpMethod.Delete, parameters);
-                populatePatientProvider(true);
+                populatePatientProvider();
             }
             catch
             {
@@ -83,9 +132,15 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// adds a provider to the patient
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void addProvider(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
+            //get id of the provider and create the PatientProvier object
             var button = (Button)sender;
             var grid = (Grid)button.Parent;
             var idElement = (TextBlock)grid.Children.First();
@@ -99,7 +154,7 @@ namespace Client
                 }
                 var data = JToken.FromObject(assignment);
                 await MobileServiceDotNet.InvokeApiAsync("assignment", data);
-                populatePatientProvider(true);
+                populatePatientProvider();
 
             }
             catch (InvalidDataException)
@@ -122,6 +177,11 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Creates the PatientProvider object
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private PatientProvider createAssignment(string id)
         {
             PatientProvider pp = new PatientProvider();
@@ -132,14 +192,14 @@ namespace Client
             return pp;
         }
 
+        /// <summary>
+        /// Go back to patient page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToPatient(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(PatientPage), this.screenData);
-        }
-
-        private void navToChat(object sender, TappedRoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(ChatPage), this.screenData);
         }
     }
 }

@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs;
+﻿using Microsoft.Azure.WebJobs;
 using System;
 using WebJob1.EHRASsets;
+using WebJob1.NotificationClass;
 
 namespace WebJob1
 {
@@ -16,10 +12,28 @@ namespace WebJob1
         [NoAutomaticTrigger]
         public static void ManualTrigger()
         {
-            Console.WriteLine("I am HerE");
+            Console.WriteLine("Change");
             var ehr = new EHR();
             ehr.PatientBiometricScan();
             Console.WriteLine("I am HerE");
+        }
+
+        [NoAutomaticTrigger]
+        public async static void NotifyTrigger()
+        {
+            string message = "Message from the Webjob";
+            // Windows 8.1 / Windows Phone 8.1
+            var toast = @"<toast><visual><binding template=""ToastText01""><text id=""1"">" +
+                            message + "</text></binding></visual></toast>";
+            try
+            {
+                await Notifications.Instance.Hub.SendWindowsNativeNotificationAsync(toast);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error in sending Notification message: " + e.Message);
+            }
+            Console.WriteLine("Triggered Notification");
         }
     }
 }

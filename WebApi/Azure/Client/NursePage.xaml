@@ -12,6 +12,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"></RowDefinition>
                 <RowDefinition Height="10*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
             <ProgressBar Name="MyProgressBar" IsIndeterminate="False" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="Transparent"></ProgressBar>
             <Grid Grid.Row="0" DataContext="{Binding User}" Background="LightBlue">
@@ -57,5 +58,6 @@
                 </ListView>
             </Grid>
         </Grid>
+        <Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="Log Off" Tapped="logout" />
     </Grid>
 </Page>

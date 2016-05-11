@@ -5,6 +5,9 @@ using System.Web;
 
 namespace Azure.ClientObjects
 {
+    /// <summary>
+    /// Represents a provider used by client application
+    /// </summary>
     public class ViewProvider
     {
         public int ProviderId { get; set; }

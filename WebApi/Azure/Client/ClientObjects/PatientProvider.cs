@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Client.ClientObjects
 {
+    /// <summary>
+    /// Represents PatientProvider table in SQL
+    /// </summary>
     public class PatientProvider
     {
         [Key]

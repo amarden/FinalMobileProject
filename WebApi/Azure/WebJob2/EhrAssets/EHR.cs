@@ -1,6 +1,5 @@
 ﻿using Azure.DataObjects;
 using Azure.Models;
-using Faker;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -10,8 +9,27 @@ using System.Threading.Tasks;
 
 namespace WebJob1.EHRASsets
 {
+    /// <summary>
+    /// A class that tries to mock certain aspects of an EHR system. Primarily used generating fake biometrics for existing patients
+    /// </summary>
     public class EHR
     {
+        /// <summary>
+        /// Class that will determine if a status has changed used for notifications and to keep track of what happened to a patient
+        /// </summary>
+        public class PatientStatusChange
+        {
+            public PatientStatusChange(string oldStatus, string newStatus)
+            {
+                if(oldStatus != newStatus)
+                {
+                    changeTo = newStatus;
+                }
+            }
+
+            public string changeTo { get; set; }
+        }
+
         //Stable ranges and critical ranges to help calculate medical status
         private Tuple<int, int> systolicStableRange = new Tuple<int, int>(80, 145);
         private Tuple<int, int> diastolicStableRange = new Tuple<int, int>(50, 90);
@@ -21,22 +39,22 @@ namespace WebJob1.EHRASsets
         private Tuple<int, int> diastolicCrticalBounds = new Tuple<int, int>(20, 120);
         private Tuple<int, int> glucoseCriticalBounds = new Tuple<int, int>(20, 160);
         private int oxygenCriticalLowerBound = 65;
+        public List<PatientStatusChange> changes = new List<PatientStatusChange>();
+        //Random number generator used in several methods to generate fake data
         Random r = new Random();
-        private int patientUpdate = 0;
-        
+
         public EHR()
         {
         }
 
-        public int getPatientChangeNumber()
-        {
-            return patientUpdate;
-        }
-
+        /// <summary>
+        /// Scans All patients and 25% of the time will generate new biometrics as long as the patient has had less than 10 measurements today
+        /// </summary>
         public void PatientBiometricScan()
         {
             using (var db = new DataContext())
             {
+                //only do this for patients that are not dead and are not discharged
                 var patients = db.Patients.Include("Biometrics").Where(x=>x.MedicalStatus == "stable" || x.MedicalStatus == "critical");
                 foreach(var p in patients)
                 {
@@ -46,10 +64,10 @@ namespace WebJob1.EHRASsets
                         bool hasMaxMeasurements = doesPatientHaveMaxMeasurementsToday(p, 10);
                         if(!hasMaxMeasurements)
                         {
-                            patientUpdate++;
                             Biometric measure = generateBiometric(p);
                             var status = imputeStatus(p.Biometrics, measure);
                             measure.DeathModifier = status.Item2;
+                            changes.Add(new PatientStatusChange(p.MedicalStatus, status.Item1));
                             p.MedicalStatus = status.Item1;
                             db.Entry(p).State = EntityState.Modified;
                             db.Biometrics.Add(measure);
@@ -60,6 +78,12 @@ namespace WebJob1.EHRASsets
             }
         }
 
+        /// <summary>
+        /// Imputes status based on patient biometris and returns status and deathmodifier
+        /// </summary>
+        /// <param name="allMeasures"></param>
+        /// <param name="measure"></param>
+        /// <returns></returns>
         private Tuple<string, int> imputeStatus(IEnumerable<Biometric> allMeasures, Biometric measure)
         {
             int lengthOfStay = allMeasures.Count();
@@ -96,6 +120,11 @@ namespace WebJob1.EHRASsets
 
         }
 
+        /// <summary>
+        /// Takes oxygen number and determines whether the range is stable, unstable, or critical
+        /// </summary>
+        /// <param name="oxygen"></param>
+        /// <returns>metric status</returns>
         private string checkOxygenStatus(int oxygen)
         {
             string status;
@@ -114,6 +143,11 @@ namespace WebJob1.EHRASsets
             return status;
         }
 
+        /// <summary>
+        /// Takes glucose number and determines whether the range is stable, unstable, or critical
+        /// </summary>
+        /// <param name="glucose"></param>
+        /// <returns>metric status</returns>
         private string checkGlucoseStatus(int glucose)
         {
             string status;
@@ -132,6 +166,12 @@ namespace WebJob1.EHRASsets
             return status;
         }
 
+        /// <summary>
+        /// Takes BP numbers and determines whether the range is stable, unstable, or critical
+        /// </summary>
+        /// <param name="systolic"></param>
+        /// <param name="diastolic"></param>
+        /// <returns>metric status</returns>
         private string checkBpStatus(int systolic, int diastolic)
         {
             string status;
@@ -152,6 +192,11 @@ namespace WebJob1.EHRASsets
             return status;
         }
 
+        /// <summary>
+        /// generates a new biometric reading for a patient
+        /// </summary>
+        /// <param name="patient"></param>
+        /// <returns></returns>
         private Biometric generateBiometric(Patient patient)
         {
             Biometric newReading = new Biometric();
@@ -166,6 +211,12 @@ namespace WebJob1.EHRASsets
             return newReading;
         }
 
+        /// <summary>
+        /// Generates glucose reading, will be more volatile if patient is critical
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="lastReading"></param>
+        /// <returns>integer of representing glucose measurement</returns>
         private int generateGlucose(string status, Biometric lastReading)
         {
             int maxChange = status == "critical" ? 25 : 10;
@@ -174,6 +225,12 @@ namespace WebJob1.EHRASsets
             return newGlucose;
         }
 
+        /// <summary>
+        /// Generates glucose reading, will be more volatile if patient is critical
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="lastReading"></param>
+        /// <returns>Tuple of integers of representing BP measurement</returns>
         private Tuple<int, int> generateBloodPressure(string status, Biometric lastReading)
         {
             int maxChange = status == "critical" ? 20 : 10;
@@ -184,6 +241,12 @@ namespace WebJob1.EHRASsets
             return new Tuple<int, int>(newSystolic, newDiastolic);
         }
 
+        /// <summary>
+        /// Generates glucose reading, will be more volatile if patient is critical
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="lastReading"></param>
+        /// <returns>integer of representing oxygen measurement</returns>
         private int generateOxygen(string status, Biometric lastReading)
         {
             int maxChange = status == "critical" ? 10 : 5;
@@ -193,6 +256,12 @@ namespace WebJob1.EHRASsets
             return newOxygen;
         }
 
+        /// <summary>
+        /// Takes patient and number which represents max number in a day patient can have readings
+        /// </summary>
+        /// <param name="patient"></param>
+        /// <param name="max"></param>
+        /// <returns>boolean</returns>
         private bool doesPatientHaveMaxMeasurementsToday(Patient patient, int max)
         {
             DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);

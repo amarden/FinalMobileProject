@@ -1,5 +1,8 @@
-﻿namespace Client.ClientObjects
+﻿namespace Web.ClientObjects
 {
+    /// <summary>
+    /// Represents a provider used by client application
+    /// </summary>
     public class ViewProvider
     {
         public int ProviderId { get; set; }

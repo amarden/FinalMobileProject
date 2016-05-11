@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Web.ClientObjects;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -26,17 +27,20 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace Client
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Represents the page where a list of images associated with patient can be seen
     /// </summary>
     public sealed partial class ImagingPage : Page
     {
+        //our view model for our page
         private PatientScreenData screenData = new PatientScreenData();
+
+        //Represents our connection to our azure api
         private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
+
+        //class level variable that keeps track of imageType that the user wants to create
         private string imageType { get; set; }
 
         public ImagingPage()
@@ -44,6 +48,10 @@ namespace Client
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Assigns data passed from previous page to view model and populates the image list
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.screenData = (PatientScreenData)e.Parameter;
@@ -51,15 +59,39 @@ namespace Client
             populateImages();
         }
 
+        /// <summary>
+        /// Gets list of images associated with the patient
+        /// </summary>
         private async void populateImages()
         {
-            Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
-            List<PatientImaging> patientImages = await MobileServiceDotNet.InvokeApiAsync<List<PatientImaging>>("patientimaging", HttpMethod.Get, parameters);
-            ImageList.ItemsSource = patientImages;
+            MyProgressBar.IsIndeterminate = true;
+            try
+            {
+                Dictionary<string, string> parameters = new Dictionary<string, string> { ["patientId"] = this.screenData.Patient.PatientId.ToString() };
+                List<PatientImaging> patientImages = await MobileServiceDotNet.InvokeApiAsync<List<PatientImaging>>("patientimaging", HttpMethod.Get, parameters);
+                ImageList.ItemsSource = patientImages;
+            }
+            catch
+            {
+                var message = "There was an error retrieving your images";
+                var dialog = new MessageDialog(message);
+                dialog.Commands.Add(new UICommand("OK"));
+                await dialog.ShowAsync();
+            }
+            finally
+            {
+                MyProgressBar.IsIndeterminate = false;
+            }
         }
 
+        /// <summary>
+        /// Adds an image to the api
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void addImage(object sender, RoutedEventArgs e)
         {
+            MyProgressBar.IsIndeterminate = true;
             try
             {
                 if (this.imageType == "" || this.imageType == null)
@@ -69,12 +101,11 @@ namespace Client
                 FileOpenPicker fp = new FileOpenPicker(); // Adding filters for the file type to access.         
                 fp.FileTypeFilter.Add(".jpeg");
                 fp.FileTypeFilter.Add(".png");
-                fp.FileTypeFilter.Add(".pf");
                 fp.FileTypeFilter.Add(".jpg");
-                // Using PickSingleFileAsync() will return a storage file which can be saved into an object of storage file class.          
+                //Opens up file directory to choose image file
                 StorageFile sf = await fp.PickSingleFileAsync();
-                // Adding bitmap image object to store the stream provided by the object of StorageFile defined above.BitmapImage bmp = new BitmapImage();           
-                // Reading file as a stream and saving it in an object of IRandomAccess. 
+
+                //Creates byte array data from image file
                 byte[] fileBytes = null;
                 using (IRandomAccessStreamWithContentType stream = await sf.OpenReadAsync())
                 {
@@ -98,8 +129,16 @@ namespace Client
                 dialog.Commands.Add(new UICommand("OK"));
                 await dialog.ShowAsync();
             }
+            finally
+            {
+                MyProgressBar.IsIndeterminate = false;
+            }
         }
 
+        /// <summary>
+        /// Submits the image data to create the image
+        /// </summary>
+        /// <param name="imageStream"></param>
         private async void submitImage(byte[] imageStream)
         {
             MyProgressBar.IsIndeterminate = true;
@@ -108,7 +147,7 @@ namespace Client
             {
                 newImage.ImageStream = imageStream;
                 newImage.PatientId = this.screenData.Patient.PatientId;
-                newImage.ImageType = "MRI";
+                newImage.ImageType = this.imageType;
                 var data = JToken.FromObject(newImage);
                 await MobileServiceDotNet.InvokeApiAsync("patientimaging", data);
                 this.imageType = "";
@@ -116,7 +155,7 @@ namespace Client
             }
             catch
             {
-                var message = "There was an error while trying to add a provider";
+                var message = "There was an error while trying to upload this image";
                 var dialog = new MessageDialog(message);
                 dialog.Commands.Add(new UICommand("OK"));
                 await dialog.ShowAsync();
@@ -127,18 +166,33 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Go back to patient page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void navToPatient(object sender, TappedRoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(PatientPage), this.screenData);
         }
 
+        /// <summary>
+        /// Called when someone checks one of the image types, assigns it to the imageType
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
             var obj = (RadioButton)sender;
             this.imageType = obj.Content.ToString();
         }
 
-        private async void viewImage(object sender, TappedRoutedEventArgs e)
+        /// <summary>
+        /// Gets blobId that represents image location on blob and navigates to new page to show image
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void viewImage(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
             var button = (Button)sender;

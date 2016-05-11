@@ -22,12 +22,16 @@ using Windows.UI.Xaml.Navigation;
 namespace Client
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Page that is the landing page for all super users
     /// </summary>
     public sealed partial class SuperUserPage : Page
     {
-        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient("http://localhost:6163");
+        //Represents our connection to our azure api
+        private MobileServiceClient MobileServiceDotNet = new MobileServiceClient(ServerInfo.ServerName());
 
+        /// <summary>
+        /// Class used to post the number of new patients to create
+        /// </summary>
         public class PatientCreate
         {
             public int number { get; set; }
@@ -38,6 +42,11 @@ namespace Client
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Creates new fake patients.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void createPatients(object sender, TappedRoutedEventArgs e)
         {
             MyProgressBar.IsIndeterminate = true;
@@ -51,6 +60,7 @@ namespace Client
                     pc.number = Convert.ToInt32(number);
                     var data = JToken.FromObject(pc);
                     await MobileServiceDotNet.InvokeApiAsync("patient", data);
+                    //returns confirmation of the number of patients that were created
                     var message = number + " patients were created";
                     var dialog = new MessageDialog(message);
                     dialog.Commands.Add(new UICommand("OK"));
@@ -71,6 +81,11 @@ namespace Client
             
         }
 
+        /// <summary>
+        /// confirms that the user entered a number in the text box
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         private async Task<bool> isNumber(string number)
         {
             int realNumber;
@@ -86,6 +101,12 @@ namespace Client
                 await dialog.ShowAsync();
                 return false;
             }
+        }
+
+        private async void logout(object sender, TappedRoutedEventArgs e)
+        {
+            await MobileServiceDotNet.LogoutAsync();
+            this.Frame.Navigate(typeof(MainPage));
         }
     }
 }

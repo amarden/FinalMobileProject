@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 using System.Security.Principal;
 using Microsoft.Azure.Mobile.Server;
 using Microsoft.Azure.Mobile.Server.Authentication;
+using Azure.Models;
+using Azure.DataObjects;
+using System.Linq;
+using Azure.Temporary;
+using Azure.ClientObjects;
 
 namespace Azure.AuthenticationHelpers
 {
@@ -17,6 +22,7 @@ namespace Azure.AuthenticationHelpers
         private MobileAppSettingsDictionary ConfigSettings;
         private IPrincipal User;
         HttpRequestMessage Request;
+        Provider provider = new Provider();
 
         //Set our class variables with api information
         public Credentials(IPrincipal User, MobileAppSettingsDictionary config, HttpRequestMessage Request)
@@ -27,15 +33,45 @@ namespace Azure.AuthenticationHelpers
         }
 
         /// <summary>
-        /// Determines provider type and then sends request to provider to get information on user, returns user information
+        /// Gets the twitter user information from the twitter api
         /// </summary>
-        /// <returns></returns>
-        public async Task<UserSubmit> GetUserInfo()
+        /// <returns>UserSubmit object which contains user information coming from the twitter api</returns>
+        public async Task<UserSubmit> GetTwitterInfo()
         {
             var userSubmit = new UserSubmit();
             TwitterCredentials twitterCredentials = await User.GetAppServiceIdentityAsync<TwitterCredentials>(Request);
             userSubmit = await getCredentials(twitterCredentials);
             return userSubmit;
+        }
+
+        /// <summary>
+        /// returns the provider associated with the twitter login
+        /// </summary>
+        /// <returns></returns>
+        public async Task<User> GetUserInfo()
+        {
+            //var twitterUser = await GetTwitterInfo();
+            //using(var db = new DataContext())
+            //{
+            //    var potentialId = twitterUser.UserId;
+            //    this.provider = db.Providers.Where(x => x.TwitterUserId == potentialId).Single();
+            //    return provider;
+            //}
+
+            return FakeUser.getUser();
+        }
+
+        /// <summary>
+        /// takes patient id and current provider id and determines if the provider is assigned to the patient
+        /// </summary>
+        /// <param name="PatientId"></param>
+        /// <returns>boolean indicating assignment status</returns>
+        public bool isAssigned(int PatientId)
+        {
+            using (var db = new DataContext())
+            {
+                return db.PatientProviders.Any(x => x.ProviderId == this.provider.ProviderId && x.PatientId == PatientId);
+            }
         }
 
         /// <summary>

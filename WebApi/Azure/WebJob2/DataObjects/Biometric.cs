@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Azure.DataObjects
 {
+    /// <summary>
+    /// Class which represents the Biometric table in SQL
+    /// </summary>
     public class Biometric
     {
         [Key]

@@ -9,7 +9,10 @@
 </head>
 <body ng-app="ehrDashboard" ng-controller="MainCtrl as mc">
     <div layout="column" flex layout-fill>
-        <div layout="row" flex layout-padding>
+        <div layout="row" flex ng-show="!mc.processed">
+            Loading...
+        </div>
+        <div layout="row" flex layout-padding ng-show="mc.processed">
             <div layout="column">
                 <div layout="column" class="metrics" flex>
                     <md-subheader>Metrics</md-subheader>
@@ -33,7 +36,7 @@
                         <span class="metric-title">Top 3 Diagnoses</span>
                         <div flex>
                             <ul>
-                                <li ng-repeat="item in mc.processed.topDiagnoses | orderBy:'number' | limitTo:'3'">
+                                <li ng-repeat="item in mc.processed.topDiagnoses | orderBy:'-number' | limitTo:'3'">
                                     {{item.group}}
                                 </li>
                             </ul>
@@ -43,7 +46,7 @@
                         <span class="metric-title">Top 3 Procedures</span>
                         <div flex>
                             <ul>
-                                <li ng-repeat="item in mc.processed.topProcedures | orderBy:'number' | limitTo:'3'">
+                                <li ng-repeat="item in mc.processed.topProcedures | orderBy:'-number' | limitTo:'3'">
                                     {{item.group}}
                                 </li>
                             </ul>

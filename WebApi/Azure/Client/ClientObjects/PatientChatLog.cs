@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Client.ClientObjects
 {
+    /// <summary>
+    /// Represents a Chat message 
+    /// </summary>
     public class PatientChatLog
     {
         [Key]
